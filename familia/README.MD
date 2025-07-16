@@ -123,16 +123,14 @@ DB_PORT_OUT=5438
 
 #### 2.2. Construir y Ejecutar los Contenedores con Docker Compose
 
-Desde el directorio `familia/`, ejecuta el siguiente comando para construir y levantar los contenedores:
+Desde el directorio `familia/familia/familia` que es el directorio backend, ejecuta el siguiente comando para construir y levantar los contenedores:
 
 ```bash
-docker-compose up --build
+docker-compose up
 ```
 
 Esto hará lo siguiente:
-- Construirá la imagen de la aplicación Spring Boot usando el `Dockerfile`.
 - Iniciará un contenedor de PostgreSQL (`db`) con la base de datos inicializada mediante los scripts SQL en `db/sql/`.
-- Iniciará el contenedor de la aplicación (`app`) y lo conectará a la base de datos.
 
 **Nota**: Si deseas detener y eliminar los contenedores después de probar la aplicación, ejecuta:
 
@@ -140,12 +138,19 @@ Esto hará lo siguiente:
 docker-compose down
 ```
 
+#### 2.2.1 Compilar y ejecutar el proyecto backend
+
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
 #### 2.3. Acceder a la Aplicación
 
 Una vez que los contenedores estén en ejecución, la aplicación estará disponible en:
 
-- **API REST**: `http://localhost:8089/personas`
-- **Base de Datos**: Puedes conectarte a PostgreSQL en `localhost:5438` usando las credenciales definidas en `.env`:
+- **API REST**: `http://localhost:8089/familia`
+- **Base de Datos**: Puedes conectarte a PostgreSQL en `localhost:5439` usando las credenciales definidas en `.env`:
   - Host: `localhost`
   - Puerto: `5439`
   - Usuario: `weizman`
@@ -159,31 +164,17 @@ Una vez que los contenedores estén en ejecución, la aplicación estará dispon
 1. Abre Postman.
 2. Importa el archivo `Familia.postman_collection.json` que se encuentra en el directorio `Familia/`.
 3. Ejecuta las solicitudes de la colección para probar los endpoints de la API, como:
-  - Crear, leer, actualizar y eliminar autores.
-  - Crear, leer, actualizar y eliminar libros.
+  - Crear, leer, actualizar y eliminar personas.
 
 **Ejemplo de Endpoints**:
-- `GET /personas/autores`: Obtener todos los autores.
-- `POST /personas/libros`: Crear un nuevo libro.
-- `PUT /personas/autores/{id}`: Actualizar un autor existente.
-- `DELETE /personas/libros/{id}`: Eliminar un libro.
-
-### 4. Ejecución Local sin Docker (Opcional)
-
-Si prefieres ejecutar la aplicación localmente sin Docker:
-
-1. Asegúrate de tener PostgreSQL instalado y corriendo en `localhost:5439` (o ajusta `DB_PORT_OUT` en `.env` según tu configuración).
-2. Ejecuta los scripts SQL en `db/sql/` para inicializar la base de datos.
-3. Abre el proyecto en IntelliJ IDEA.
-4. Ejecuta la clase principal `FamiliaApplication` desde el IDE.
-5. La aplicación estará disponible en `http://localhost:8089/familia`.
+- `GET /personas`: Obtener todos las personas.
+- `POST /personas`: Crear una nueva persona.
 
 ## Notas Adicionales
 
 - **Persistencia de Datos**: Los scripts SQL en `db/sql/` inicializan el esquema, datos, funciones y procedimientos almacenados en la base de datos PostgreSQL al iniciar el contenedor `db`.
 - **Depuración**: Si encuentras problemas, revisa los logs de los contenedores con:
   ```bash
-  docker-compose logs app
   docker-compose logs db
   ```
 - **Entorno de Producción**: Para un entorno de producción, considera ajustar las variables de entorno en `.env` (por ejemplo, cambiar la contraseña de la base de datos) y usar un volumen persistente para los datos de PostgreSQL.
