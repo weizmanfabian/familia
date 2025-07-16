@@ -96,10 +96,15 @@ Clona el repositorio e ingresa al directorio del proyecto:
 
 ```bash
 git clone https://github.com/weizmanfabian/familia.git
-cd familia/familia
+cd familia/
 ```
 
 ### 2. Configuración del Backend
+
+Una ves en la raiz del proyecto, ingresa al directorio donde se ve toda la estructura previamente expuesta del backend
+```bash
+cd familia/familia
+```
 
 #### 2.1. Verificar el archivo `.env`
 
