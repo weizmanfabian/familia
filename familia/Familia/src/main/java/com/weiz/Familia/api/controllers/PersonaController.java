@@ -23,7 +23,6 @@ public class PersonaController {
 
     @GetMapping
     public ResponseEntity<Set<PersonaResponse>> readAll() {
-        ResponseEntity.ok();
         Set<PersonaResponse> response = personaService.readAll();
         return response.isEmpty()
                 ? ResponseEntity.noContent().build()
