@@ -101,7 +101,10 @@ cd familia/
 
 ### 2. Configuración del Backend
 
-ingresa al directorio del familia/familia/familia donde se ve toda la estructura previamente expuesta
+Una ves en la raiz del proyecto, ingresa al directorio donde se ve toda la estructura previamente expuesta del backend
+```bash
+cd familia/familia
+```
 
 #### 2.1. Verificar el archivo `.env`
 
