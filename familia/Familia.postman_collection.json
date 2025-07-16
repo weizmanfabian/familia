@@ -1,0 +1,169 @@
+{
+	"info": {
+		"_postman_id": "8ba97159-98ff-416b-8a06-5fd3a54476fa",
+		"name": "Familia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17147091"
+	},
+	"item": [
+		{
+			"name": "personas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/personas",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"personas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "personas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"let response = pm.response.json();\r",
+							"pm.collectionVariables.set(\"numero_documento\", response.numero_documento);\r",
+							"console.log(pm.collectionVariables.get(\"numero_documento\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numero_documento\": \"1105062033\",\r\n    \"nombre\": \"Weizman\",\r\n    \"apellidos\": \"Castañeda\",\r\n    \"fecha_nacimiento\": \"1998-05-27\",\r\n    \"correo_electronico\": \"weizman@correo.com\",\r\n    \"telefono\": \"3111111111\",\r\n    \"ocupacion\": \"INDEPENDIENTE\",\r\n    \"idCiudad\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/personas",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"personas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "personas_by_id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/personas/{{numero_documento}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"personas",
+						"{{numero_documento}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "personas",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"Weizman Fabian\",\r\n    \"apellidos\": \"Castañeda Herreño\",\r\n    \"fecha_nacimiento\": \"1998-05-24\",\r\n    \"correo_electronico\": \"weizman@correo.com.co\",\r\n    \"telefono\": \"3111111112\",\r\n    \"ocupacion\": \"EMPLEADO\",\r\n    \"idCiudad\": 815\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/personas/{{numero_documento}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"personas",
+						"{{numero_documento}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "personas",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/personas/{{numero_documento}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"personas",
+						"{{numero_documento}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "port",
+			"value": "8089",
+			"type": "string"
+		},
+		{
+			"key": "numero_documento",
+			"value": ""
+		},
+		{
+			"key": "url",
+			"value": "http://localhost:8089/familia",
+			"type": "string"
+		}
+	]
+}
