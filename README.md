@@ -109,7 +109,7 @@ git --version
 ### 1. Clonar el Repositorio
 ```bash
 git clone https://github.com/weizmanfabian/familia.git
-cd familia/familia
+cd familia/familia/familia
 ```
 
 ### 2. Estructura del Proyecto
@@ -309,6 +309,10 @@ cd familia-front
 npm install
 
 ng serve
+```
+El front estará disponible en la ruta 
+```bash
+http://localhost:4200/
 ```
 
 ---
