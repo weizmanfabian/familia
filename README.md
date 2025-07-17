@@ -299,6 +299,20 @@ docker-compose logs db
 docker stats
 ```
 
+# Despliegue del front
+en la raiz del proyecto ingresamos al directorio **familia-front**
+```bash
+cd familia-front
+```
+### inicialización y despliegue
+```bash
+npm install
+
+ng serve
+```
+
+---
+
 ## Contribución
 
 ### Flujo de Trabajo
