@@ -64,19 +64,12 @@ public class PersonaEntity {
     }
 
     @PostPersist
-    public void postPersist(){
-        validarViabilidad();
-    }
-
     @PostUpdate
-    public void postUpdate(){
-        validarViabilidad();
-    }
-
-    private void validarViabilidad(){
+    public void validarViabilidad(){
         LocalDate now = LocalDate.now();
         int edad = Period.between(this.fecha_nacimiento, now).getYears();
         this.setEsViable(edad >= 18 && edad <= 65);
+
     }
 
     public void merge(PersonaEntity updateData){

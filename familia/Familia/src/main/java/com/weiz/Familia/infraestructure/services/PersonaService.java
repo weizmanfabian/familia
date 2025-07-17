@@ -42,6 +42,7 @@ public class PersonaService implements IPersonaService {
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
         var personaPrePersist = PersonaEntity.requestToEntity(request);
         personaPrePersist.setCiudad(ciudad);
+        personaPrePersist.validarViabilidad();
         var personaPersisted = personaRepository.save(personaPrePersist);
         return PersonaEntity.entityToResponse(personaPersisted);
     }
@@ -59,6 +60,7 @@ public class PersonaService implements IPersonaService {
         var personaCurrent = PersonaEntity.requestToEntity(request);
         personaCurrent.setCiudad(ciudad);
         personaSaved.merge(personaCurrent);
+        personaSaved.validarViabilidad();
         var personaPersisted = personaRepository.save(personaSaved);
         return PersonaEntity.entityToResponse(personaPersisted);
     }

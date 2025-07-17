@@ -1,0 +1,204 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ modalTitle }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="personaForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <!-- Número de documento -->
+      <div class="col-md-6 mb-3">
+        <label for="numero_documento" class="form-label">Número de Documento *</label>
+        <input 
+          type="text" 
+          class="form-control"
+          [class.is-invalid]="(f['numero_documento'].invalid && f['numero_documento'].touched) || hasFieldError('numero_documento')"
+          id="numero_documento"
+          formControlName="numero_documento"
+          [readonly]="isEdit">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['numero_documento'].invalid && f['numero_documento'].touched" class="invalid-feedback">
+          <div *ngIf="f['numero_documento'].errors?.['required']">El número de documento es requerido</div>
+          <div *ngIf="f['numero_documento'].errors?.['minlength']">Debe tener al menos 8 caracteres</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('numero_documento')" class="invalid-feedback d-block">
+          {{ getFieldError('numero_documento') }}
+        </div>
+      </div>
+
+      <!-- Nombre -->
+      <div class="col-md-6 mb-3">
+        <label for="nombre" class="form-label">Nombre *</label>
+        <input 
+          type="text" 
+          class="form-control"
+          [class.is-invalid]="(f['nombre'].invalid && f['nombre'].touched) || hasFieldError('nombre')"
+          id="nombre"
+          formControlName="nombre">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['nombre'].invalid && f['nombre'].touched" class="invalid-feedback">
+          <div *ngIf="f['nombre'].errors?.['required']">El nombre es requerido</div>
+          <div *ngIf="f['nombre'].errors?.['minlength']">Debe tener al menos 2 caracteres</div>
+          <div *ngIf="f['nombre'].errors?.['maxlength']">No puede exceder 50 caracteres</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('nombre')" class="invalid-feedback d-block">
+          {{ getFieldError('nombre') }}
+        </div>
+      </div>
+
+      <!-- Apellidos -->
+      <div class="col-md-6 mb-3">
+        <label for="apellidos" class="form-label">Apellidos *</label>
+        <input 
+          type="text" 
+          class="form-control"
+          [class.is-invalid]="(f['apellidos'].invalid && f['apellidos'].touched) || hasFieldError('apellidos')"
+          id="apellidos"
+          formControlName="apellidos">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['apellidos'].invalid && f['apellidos'].touched" class="invalid-feedback">
+          <div *ngIf="f['apellidos'].errors?.['required']">Los apellidos son requeridos</div>
+          <div *ngIf="f['apellidos'].errors?.['minlength']">Debe tener al menos 2 caracteres</div>
+          <div *ngIf="f['apellidos'].errors?.['maxlength']">No puede exceder 100 caracteres</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('apellidos')" class="invalid-feedback d-block">
+          {{ getFieldError('apellidos') }}
+        </div>
+      </div>
+
+      <!-- Fecha de nacimiento -->
+      <div class="col-md-6 mb-3">
+        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
+        <input 
+          type="date" 
+          class="form-control"
+          [class.is-invalid]="(f['fecha_nacimiento'].invalid && f['fecha_nacimiento'].touched) || hasFieldError('fecha_nacimiento')"
+          id="fecha_nacimiento"
+          formControlName="fecha_nacimiento">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['fecha_nacimiento'].invalid && f['fecha_nacimiento'].touched" class="invalid-feedback">
+          <div *ngIf="f['fecha_nacimiento'].errors?.['required']">La fecha de nacimiento es requerida</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('fecha_nacimiento')" class="invalid-feedback d-block">
+          {{ getFieldError('fecha_nacimiento') }}
+        </div>
+      </div>
+
+      <!-- Correo electrónico -->
+      <div class="col-md-6 mb-3">
+        <label for="correo_electronico" class="form-label">Correo Electrónico *</label>
+        <input 
+          type="email" 
+          class="form-control"
+          [class.is-invalid]="(f['correo_electronico'].invalid && f['correo_electronico'].touched) || hasFieldError('correo_electronico')"
+          id="correo_electronico"
+          formControlName="correo_electronico">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['correo_electronico'].invalid && f['correo_electronico'].touched" class="invalid-feedback">
+          <div *ngIf="f['correo_electronico'].errors?.['required']">El correo electrónico es requerido</div>
+          <div *ngIf="f['correo_electronico'].errors?.['email']">Debe ser un correo electrónico válido</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('correo_electronico')" class="invalid-feedback d-block">
+          {{ getFieldError('correo_electronico') }}
+        </div>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="col-md-6 mb-3">
+        <label for="telefono" class="form-label">Teléfono *</label>
+        <input 
+          type="tel" 
+          class="form-control"
+          [class.is-invalid]="(f['telefono'].invalid && f['telefono'].touched) || hasFieldError('telefono')"
+          id="telefono"
+          formControlName="telefono">
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['telefono'].invalid && f['telefono'].touched" class="invalid-feedback">
+          <div *ngIf="f['telefono'].errors?.['required']">El teléfono es requerido</div>
+          <div *ngIf="f['telefono'].errors?.['minlength']">Debe tener al menos 10 caracteres</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('telefono')" class="invalid-feedback d-block">
+          {{ getFieldError('telefono') }}
+        </div>
+      </div>
+
+      <!-- Ocupación -->
+      <div class="col-md-6 mb-3">
+        <label for="ocupacion" class="form-label">Ocupación *</label>
+        <select 
+          class="form-select"
+          [class.is-invalid]="(f['ocupacion'].invalid && f['ocupacion'].touched) || hasFieldError('ocupacion')"
+          id="ocupacion"
+          formControlName="ocupacion">
+          <option value="">Seleccione una ocupación</option>
+          <option *ngFor="let ocupacion of ocupaciones" [value]="ocupacion">
+            {{ ocupacion }}
+          </option>
+        </select>
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['ocupacion'].invalid && f['ocupacion'].touched" class="invalid-feedback">
+          <div *ngIf="f['ocupacion'].errors?.['required']">La ocupación es requerida</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('ocupacion')" class="invalid-feedback d-block">
+          {{ getFieldError('ocupacion') }}
+        </div>
+      </div>
+
+      <!-- Ciudad -->
+      <div class="col-md-6 mb-3">
+        <label for="ciudad_id" class="form-label">Ciudad *</label>
+        <select 
+          class="form-select"
+          [class.is-invalid]="(f['ciudad_id'].invalid && f['ciudad_id'].touched) || hasFieldError('ciudad_id')"
+          id="ciudad_id"
+          formControlName="ciudad_id">
+          <option value="">Seleccione una ciudad</option>
+          <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">
+            {{ ciudad.nombre }}, {{ ciudad.departamento }}
+          </option>
+        </select>
+        
+        <!-- Errores de validación local -->
+        <div *ngIf="f['ciudad_id'].invalid && f['ciudad_id'].touched" class="invalid-feedback">
+          <div *ngIf="f['ciudad_id'].errors?.['required']">La ciudad es requerida</div>
+        </div>
+        
+        <!-- Errores del servidor -->
+        <div *ngIf="hasFieldError('ciudad_id')" class="invalid-feedback d-block">
+          {{ getFieldError('ciudad_id') }}
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
+    Cancelar
+  </button>
+  <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading">
+    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+    {{ submitButtonText }}
+  </button>
+</div>
