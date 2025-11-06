@@ -905,30 +905,33 @@ INSERT INTO ciudad (nombre, departamento) VALUES
 
 INSERT INTO persona (
     numero_documento, nombre, apellidos, fecha_nacimiento,
-    correo_electronico, telefono, ocupacion, ciudad_id, esviable
+    correo_electronico, telefono, ocupacion, ciudad_id, esviable, actualizado_en
 ) VALUES (
     '1234567890', 'Juan', 'Pérez García', '1990-05-15',
     'juan.perez@example.com', '3101234567', 'EMPLEADO',
     126,
-    true
+    true,
+    '2025-01-15 10:30:00'
 );
 
 INSERT INTO persona (
     numero_documento, nombre, apellidos, fecha_nacimiento,
-    correo_electronico, telefono, ocupacion, ciudad_id, esviable
+    correo_electronico, telefono, ocupacion, ciudad_id, esviable, actualizado_en
 ) VALUES (
     '0987654321', 'María', 'López Martínez', '1985-11-22',
     'maria.lopez@example.com', '3209876543', 'INDEPENDIENTE',
     1,
-    true
+    true,
+    '2025-01-20 14:45:30'
 );
 
 INSERT INTO persona (
     numero_documento, nombre, apellidos, fecha_nacimiento,
-    correo_electronico, telefono, ocupacion, ciudad_id, esviable
+    correo_electronico, telefono, ocupacion, ciudad_id, esviable, actualizado_en
 ) VALUES (
     '4567890123', 'Carlos', 'González Rodríguez', '1975-03-10',
     'carlos.gonzalez@example.com', '3001237890', 'PENSIONADO',
     850,
-    true
+    true,
+    '2025-02-01 09:15:45'
 );

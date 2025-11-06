@@ -15,6 +15,7 @@ CREATE TABLE persona (
     ocupacion VARCHAR(20) NOT NULL CHECK (ocupacion IN ('EMPLEADO', 'INDEPENDIENTE', 'PENSIONADO')),
     esViable BOOLEAN,
     ciudad_id INT NOT NULL,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (ciudad_id) REFERENCES ciudad(id)
 );
 

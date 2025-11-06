@@ -1,0 +1,225 @@
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: APP_NAME=Familia
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: APP_CONTEXT_PATH=/familia
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: MAVEN_HOME=C:\apache-maven-3.9.7\bin
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: IntelliJ IDEA=C:\Program Files\JetBrains\IntelliJ IDEA 2023.1.2\bin;
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: TMP=C:\Users\weizm\AppData\Local\Temp
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: GoLand=C:\Program Files\JetBrains\GoLand 2024.3.3\bin;
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: SystemDrive=C:
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: USERDOMAIN=WEIZMAN
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: api_key_api_layer=fnNscANQM5erElVxLJnEIBgI8N0V4Tgk
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PROCESSOR_ARCHITECTURE=AMD64
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: asl.log=Destination=file
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: =::=::\
+2025-11-05T21:36:39.648-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: OS=Windows_NT
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ProgramData=C:\ProgramData
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: SystemRoot=C:\WINDOWS
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: EFC_8812_1592913036=1
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DriverData=C:\Windows\System32\Drivers\DriverData
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PROCESSOR_REVISION=7100
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: LOGONSERVER=\\WEIZMAN
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: SESSIONNAME=Console
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: USERPROFILE=C:\Users\weizm
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: APP_PORT_IN=8080
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PROCESSOR_IDENTIFIER=AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: JAVA_HOME=C:\Program Files\Java\jdk1.8.0_202
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: VBOX_HWVIRTEX_IGNORE_SVM_IN_USE=1
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ChocolateyInstall=C:\ProgramData\chocolatey
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DB_NAME=familia
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ProgramFiles=C:\Program Files
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: HOMEDRIVE=C:
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ALLUSERSPROFILE=C:\ProgramData
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DB_HOST=localhost
+2025-11-05T21:36:39.649-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: CommonProgramW6432=C:\Program Files\Common Files
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DB_PASSWORD=****
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: APPDATA=C:\Users\weizm\AppData\Roaming
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ComSpec=C:\WINDOWS\system32\cmd.exe
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PUBLIC=C:\Users\Public
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: COMPUTERNAME=WEIZMAN
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ChocolateyLastPathUpdate=133467776052379273
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: OneDriveConsumer=C:\Users\weizm\OneDrive
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PyCharm Community Edition=C:\Program Files\JetBrains\PyCharm Community Edition 2024.2.0.1\bin;
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DB_USER=weizman
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ProgramFiles(x86)=C:\Program Files (x86)
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: APP_PORT_OUT=8089
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: IntelliJ IDEA Community Edition=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.1.1.1\bin;
+2025-11-05T21:36:39.650-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: windir=C:\WINDOWS
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: PROCESSOR_LEVEL=23
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: LOCALAPPDATA=C:\Users\weizm\AppData\Local
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: TEMP=C:\Users\weizm\AppData\Local\Temp
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: DB_PORT_OUT=5439
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: OneDrive=C:\Users\weizm\OneDrive
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: ProgramW6432=C:\Program Files
+2025-11-05T21:36:39.651-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.config.EnvInitializer   : Cargando variable de entorno: NUMBER_OF_PROCESSORS=12
+2025-11-05T21:36:39.664-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.FamiliaApplication      : Starting FamiliaApplication using Java 21.0.7 with PID 16080 (D:\java\familia\familia\Familia\target\classes started by weizm in D:\java\familia\familia\Familia)
+2025-11-05T21:36:39.665-05:00  INFO 16080 --- [Familia] [  restartedMain] com.weiz.Familia.FamiliaApplication      : No active profile set, falling back to 1 default profile: "default"
+2025-11-05T21:36:39.722-05:00  INFO 16080 --- [Familia] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-11-05T21:36:39.723-05:00  INFO 16080 --- [Familia] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-11-05T21:36:40.666-05:00  INFO 16080 --- [Familia] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-05T21:36:40.731-05:00  INFO 16080 --- [Familia] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56 ms. Found 2 JPA repository interfaces.
+2025-11-05T21:36:41.412-05:00  INFO 16080 --- [Familia] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-05T21:36:41.424-05:00  INFO 16080 --- [Familia] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-05T21:36:41.425-05:00  INFO 16080 --- [Familia] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-11-05T21:36:41.477-05:00  INFO 16080 --- [Familia] [  restartedMain] o.a.c.c.C.[.[localhost].[/familia]       : Initializing Spring embedded WebApplicationContext
+2025-11-05T21:36:41.479-05:00  INFO 16080 --- [Familia] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1755 ms
+2025-11-05T21:36:41.796-05:00  INFO 16080 --- [Familia] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-05T21:36:41.867-05:00  INFO 16080 --- [Familia] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-05T21:36:41.893-05:00  INFO 16080 --- [Familia] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-05T21:36:42.136-05:00  INFO 16080 --- [Familia] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-05T21:36:42.157-05:00  INFO 16080 --- [Familia] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-05T21:36:43.279-05:00  WARN 16080 --- [Familia] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 28P01
+2025-11-05T21:36:43.280-05:00 ERROR 16080 --- [Familia] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : FATAL: la autentificaci�n password fall� para el usuario �weizman�
+2025-11-05T21:36:43.280-05:00  WARN 16080 --- [Familia] [  restartedMain] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
+
+org.hibernate.exception.GenericJDBCException: unable to obtain isolated JDBC connection [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:63) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:116) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:292) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:124) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:78) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:221) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:189) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1431) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1502) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1853) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1802) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954) ~[spring-context-6.1.18.jar:6.1.18]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.18.jar:6.1.18]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.10.jar:3.3.10]
+	at com.weiz.Familia.FamiliaApplication.main(FamiliaApplication.java:21) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.10.jar:3.3.10]
+Caused by: org.postgresql.util.PSQLException: FATAL: la autentificaci�n password fall� para el usuario �weizman�
+	at org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication(ConnectionFactoryImpl.java:704) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:213) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:268) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:446) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.Driver.connect(Driver.java:298) ~[postgresql-42.7.5.jar:42.7.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-5.1.0.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:122) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:439) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:61) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	... 38 common frames omitted
+
+2025-11-05T21:36:43.299-05:00  WARN 16080 --- [Familia] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-05T21:36:43.948-05:00  INFO 16080 --- [Familia] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-05T21:36:43.962-05:00  INFO 16080 --- [Familia] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-05T21:36:45.010-05:00  WARN 16080 --- [Familia] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 28P01
+2025-11-05T21:36:45.010-05:00 ERROR 16080 --- [Familia] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : FATAL: la autentificaci�n password fall� para el usuario �weizman�
+2025-11-05T21:36:45.013-05:00 ERROR 16080 --- [Familia] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.GenericJDBCException: Unable to open JDBC Connection for DDL execution [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+2025-11-05T21:36:45.013-05:00  WARN 16080 --- [Familia] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.GenericJDBCException: Unable to open JDBC Connection for DDL execution [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+2025-11-05T21:36:45.016-05:00  INFO 16080 --- [Familia] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-11-05T21:36:45.028-05:00  INFO 16080 --- [Familia] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger :
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-05T21:36:45.043-05:00 ERROR 16080 --- [Familia] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.GenericJDBCException: Unable to open JDBC Connection for DDL execution [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1806) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954) ~[spring-context-6.1.18.jar:6.1.18]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.18.jar:6.1.18]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.10.jar:3.3.10]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.10.jar:3.3.10]
+	at com.weiz.Familia.FamiliaApplication.main(FamiliaApplication.java:21) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.10.jar:3.3.10]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.GenericJDBCException: Unable to open JDBC Connection for DDL execution [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:421) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1853) ~[spring-beans-6.1.18.jar:6.1.18]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1802) ~[spring-beans-6.1.18.jar:6.1.18]
+	... 18 common frames omitted
+Caused by: org.hibernate.exception.GenericJDBCException: Unable to open JDBC Connection for DDL execution [FATAL: la autentificaci�n password fall� para el usuario �weizman�] [n/a]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:63) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:74) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:39) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcConnection(ImprovedExtractionContextImpl.java:63) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.doValidation(AbstractSchemaValidator.java:68) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:289) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:322) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:457) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1506) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.1.18.jar:6.1.18]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-6.1.18.jar:6.1.18]
+	... 22 common frames omitted
+Caused by: org.postgresql.util.PSQLException: FATAL: la autentificaci�n password fall� para el usuario �weizman�
+	at org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication(ConnectionFactoryImpl.java:704) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:213) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:268) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:446) ~[postgresql-42.7.5.jar:42.7.5]
+	at org.postgresql.Driver.connect(Driver.java:298) ~[postgresql-42.7.5.jar:42.7.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-5.1.0.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:122) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:439) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:46) ~[hibernate-core-6.5.3.Final.jar:6.5.3.Final]
+	... 42 common frames omitted
+
+
+Process finished with exit code 0
