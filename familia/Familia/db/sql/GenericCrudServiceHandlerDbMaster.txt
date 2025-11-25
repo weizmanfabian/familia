@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.weiz.Familia.infraestructure.services;
+package com.credifamilia.dbmaster.servicio.impl;
 
+import com.credifamilia.dbmaster.factory.DatabaseFactory;
+import com.credifamilia.dbmaster.servicio.util.DateConversionUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weiz.Familia.util.DateConversionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -24,13 +24,16 @@ import java.util.*;
 @Repository
 public class GenericCrudService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericCrudService.class);
+    private static final Logger LOGGER = LogManager.getLogger(GenericCrudService.class);
 
-    private final DataSource dataSource;
+    private DatabaseFactory databaseFactory;
+
+    public GenericCrudService() {
+    }
 
     @Autowired
-    public GenericCrudService(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public GenericCrudService(DatabaseFactory factory) {
+        this.databaseFactory = factory;
     }
 
     private Map<String, Object> convertJsonMap(String value) throws IOException {
@@ -40,6 +43,179 @@ public class GenericCrudService {
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
         return map;
+    }
+
+    public int setParameter(PreparedStatement pstmt, int index, Map<String, Object> map) throws SQLException {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            Object value = entry.getValue();
+            if (value == null) {
+                pstmt.setNull(index++, java.sql.Types.NULL);
+            } else if (value.toString().isEmpty()) {
+            } else if (esBooleano(value)) {
+                pstmt.setBoolean(index++, Boolean.parseBoolean(value.toString()));
+            } else if (esDouble(value)) {
+                pstmt.setDouble(index++, Double.parseDouble(value.toString()));
+            } else if (isNumeric(value)) {
+                pstmt.setLong(index++, Long.parseLong(value.toString()));
+            } else if (isTimestamp(value)) {
+                pstmt.setTimestamp(index++, fechaTimestamp(value));
+            } else if (esTexto(value)) {
+                pstmt.setString(index++, value.toString());
+            }
+        }
+
+        return index;
+    }
+
+
+    @Transactional
+    public List<?> executeSelect(String query, String whereClause, String orderClause, String dbType) throws IOException {
+        if (!whereClause.isEmpty()) {
+            Map<String, Object> map = convertJsonMap(whereClause);
+            query = query + convertMapWhere(map);
+        }
+        List<Object> resultList = new ArrayList<>();
+        query = query + " " + orderClause;
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            if (!whereClause.isEmpty()) {
+                Map<String, Object> map = convertJsonMap(whereClause);
+                int index = 1;
+                setParameter(pstmt, index, map);
+
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnType = metaData.getColumnTypeName(i);
+                    String columnName = metaData.getColumnName(i);
+                    if ("money".equalsIgnoreCase(columnType)) {
+                        String moneyValue = rs.getString(i);
+                        moneyValue = moneyValue.replaceAll("[^\\d.-]", "");
+                        row.put(columnName, new BigDecimal(moneyValue));
+                    } else {
+                        row.put(columnName, rs.getObject(i));
+                    }
+                }
+                resultList.add(row);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al ejecutar la consulta select.", e);
+        }
+        return resultList;
+    }
+
+    @Transactional
+    public void executeUpdate(String tableName, String values, String whereClause, String dbType) throws IOException {
+        StringBuilder query = new StringBuilder("UPDATE ").append(tableName).append(" SET ");
+        Map<String, Object> map = convertJsonMap(values);
+        map.forEach((key, value) -> query.append(key).append(" = ?, "));
+
+        query.setLength(query.length() - 2);
+
+        Map<String, Object> whereMap = null;
+        if (!whereClause.isEmpty()) {
+            whereMap = convertJsonMap(whereClause);
+            query.append(convertMapWhere(whereMap));
+        }
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
+
+            // Establecer los valores para SET
+            int index = 1;
+            index = setParameter(pstmt, index, map);
+
+            // Establecer los valores para WHERE
+            if (whereMap != null) {
+                setParameter(pstmt, index, whereMap);
+            }
+            // Ejecutar la eliminaci�n
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al ejecutar la actualizaci�n SQL.", e);
+        }
+
+    }
+
+    @Transactional
+    public Object executeInsertAndGetInsertedRecord(String tableName, String values, String dbType) throws IOException {
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
+        StringBuilder placeholders = new StringBuilder(") VALUES (");
+
+        Map<String, Object> map = convertJsonMap(values);
+
+        map.forEach((key, value) -> {
+            query.append(key).append(",");
+            placeholders.append("?,");
+        });
+
+        query.setLength(query.length() - 1);
+        placeholders.setLength(placeholders.length() - 1);
+        query.append(placeholders).append(")");
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
+
+            int index = 1;
+            setParameter(pstmt, index, map);
+
+            pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getObject(1);
+            } else {
+                throw new Exception("No se pudo obtener la clave generada despu�s de la inserci�n.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al ejecutar la inserci�n y recuperar la clave generada.", e);
+        }
+    }
+
+    @Transactional
+    public void executeDelete(String tableName, String whereClause, String dbType) throws IOException {
+        StringBuilder query = new StringBuilder("DELETE FROM ").append(tableName).append(" ");
+
+        Map<String, Object> whereMap = null;
+        if (!whereClause.isEmpty()) {
+            whereMap = convertJsonMap(whereClause);
+            query.append(convertMapWhere(whereMap));
+        }
+
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
+
+            // Establecer los valores para WHERE
+            int index = 1;
+            if (whereMap != null) {
+                setParameter(pstmt, index, whereMap);
+
+            }
+
+            // Ejecutar la eliminaci�n
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al ejecutar la eliminaci�n SQL.", e);
+        }
+    }
+
+    private String convertMapWhere(Map<String, Object> map) {
+        StringBuilder where = new StringBuilder(" WHERE ");
+        map.forEach((key, value) -> {
+            if (value != null && !(value instanceof String && ((String) value).isEmpty())) {
+                where.append(key).append(" =? ").append(" AND ");
+            } else {
+                where.append(key).append(" AND ");
+            }
+        });
+        int longitud = where.toString().length();
+        return where.toString().substring(1, longitud - 4);
     }
 
 
@@ -93,539 +269,12 @@ public class GenericCrudService {
             return new Timestamp(epochMilli);
         }
         // Si es String con formato ISO-8601
-        String stringValue = value.toString();
-        try {
-            // Intenta parsear como LocalDateTime (con hora: "1992-06-20T10:30:00")
-            LocalDateTime localDateTime = LocalDateTime.parse(stringValue);
-            return Timestamp.valueOf(localDateTime);
-        } catch (Exception e) {
-            try {
-                // Si falla, intenta como LocalDate (solo fecha: "1992-06-20")
-                java.time.LocalDate localDate = java.time.LocalDate.parse(stringValue);
-                LocalDateTime localDateTime = localDate.atStartOfDay();
-                return Timestamp.valueOf(localDateTime);
-            } catch (Exception e2) {
-                // Si ambos fallan, relanzar excepción original
-                throw new IllegalArgumentException(
-                        "No se puede parsear la fecha: " + stringValue +
-                                " (esperado: 'yyyy-MM-dd' o 'yyyy-MM-ddTHH:mm:ss')", e);
-            }
-        }
+        LocalDateTime localDateTime = LocalDateTime.parse((String) value);
+        return Timestamp.valueOf(localDateTime);
     }
 
     private boolean esTexto(Object value) {
         return value instanceof String;
-    }
-
-    // ==================== MÉTODOS CRUD BÁSICOS (LEGACY) ====================
-
-    /**
-     * Ejecuta una consulta SELECT básica (método legacy para compatibilidad).
-     * <p>
-     * NOTA: Este método mantiene la firma original para compatibilidad con código existente.
-     * Para nuevas implementaciones, se recomienda usar executeComplexSelect().
-     *
-     * @param quey        Consulta SQL o nombre de tabla (mantiene nombre original del parámetro para legacy)
-     * @param whereClause String JSON con condiciones WHERE (ej: "{\"id\": 1}")
-     * @param orderClause Cláusula ORDER BY opcional
-     * @param dbType      Tipo de base de datos
-     * @return Lista de mapas con los resultados
-     * @throws IOException Si hay errores de conversión JSON
-     */
-    @Transactional
-    public List<?> executeSelect(String quey, String whereClause, String orderClause, String dbType) throws IOException {
-        long startTime = System.currentTimeMillis();
-
-        LOGGER.info("[executeSelect] ===== INICIO DE CONSULTA SELECT (LEGACY) =====");
-        LOGGER.info("[executeSelect] Query: {}", quey);
-        LOGGER.info("[executeSelect] DB Type: {}", dbType);
-
-        if (quey == null || quey.trim().isEmpty()) {
-            LOGGER.error("[executeSelect] Query nula o vacía");
-            throw new IllegalArgumentException("El campo 'query' es obligatorio");
-        }
-
-        List<Object> resultList = new ArrayList<>();
-
-        try {
-            StringBuilder fullQuery = new StringBuilder(quey);
-            Map<String, Object> whereMap = null;
-
-            // Convertir whereClause de JSON String a Map si existe
-            if (whereClause != null && !whereClause.trim().isEmpty() && !whereClause.equals("{}")) {
-                LOGGER.debug("[executeSelect] Convirtiendo whereClause JSON a Map");
-                whereMap = convertJsonMap(whereClause);
-            }
-
-            // Construir WHERE clause si existe
-            List<Object> parameters = new ArrayList<>();
-            if (whereMap != null && !whereMap.isEmpty()) {
-                LOGGER.debug("[executeSelect] Construyendo WHERE clause con {} parámetros", whereMap.size());
-                String whereCondition = buildComplexWhereClause(whereMap, parameters);
-
-                // Agregar WHERE solo si la query no lo tiene ya
-                if (!quey.toLowerCase().contains(" where ")) {
-                    fullQuery.append(" WHERE ").append(whereCondition);
-                } else {
-                    fullQuery.append(" AND ").append(whereCondition);
-                }
-                LOGGER.debug("[executeSelect] WHERE clause construida: {}", whereCondition);
-            }
-
-            // Agregar ORDER BY si existe
-            if (orderClause != null && !orderClause.trim().isEmpty()) {
-                if (!orderClause.trim().toLowerCase().startsWith("order by")) {
-                    fullQuery.append(" ORDER BY ").append(orderClause);
-                } else {
-                    fullQuery.append(" ").append(orderClause);
-                }
-                LOGGER.debug("[executeSelect] ORDER BY agregado: {}", orderClause);
-            }
-
-            LOGGER.info("[executeSelect] Query completa: {}", fullQuery.toString());
-
-            try (Connection conn = dataSource.getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement(fullQuery.toString())) {
-
-                // Establecer parámetros usando setLegacyParameter (sin conversión de epoch millis)
-                for (int i = 0; i < parameters.size(); i++) {
-                    setLegacyParameter(pstmt, i + 1, parameters.get(i));
-                }
-
-                ResultSet rs = pstmt.executeQuery();
-                ResultSetMetaData metaData = rs.getMetaData();
-                int columnCount = metaData.getColumnCount();
-
-                LOGGER.debug("[executeSelect] Columnas detectadas: {}", columnCount);
-
-                int rowCount = 0;
-                while (rs.next()) {
-                    rowCount++;
-                    Map<String, Object> row = new HashMap<>();
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnType = metaData.getColumnTypeName(i);
-                        String columnName = metaData.getColumnName(i);
-                        Object value = rs.getObject(i);
-
-                        // Métodos legacy: devuelven fechas en formato nativo (LocalDateTime/Date)
-                        // sin conversión a epoch millis
-                        if ("money".equalsIgnoreCase(columnType)) {
-                            String moneyValue = rs.getString(i);
-                            if (moneyValue != null) {
-                                moneyValue = moneyValue.replaceAll("[^\\d.-]", "");
-                                value = new BigDecimal(moneyValue);
-                            }
-                        }
-
-                        row.put(columnName, value);
-                    }
-                    resultList.add(row);
-                }
-
-                long endTime = System.currentTimeMillis();
-                LOGGER.info("[executeSelect] Consulta completada exitosamente - {} registros procesados en {} ms",
-                        rowCount, (endTime - startTime));
-
-            } catch (SQLException e) {
-                LOGGER.error("[executeSelect] Error SQL al ejecutar consulta: {} - Error: {}",
-                        fullQuery.toString(), e.getMessage(), e);
-                throw new RuntimeException("Error al ejecutar la consulta: " + fullQuery.toString(), e);
-            }
-
-        } catch (Exception e) {
-            LOGGER.error("[executeSelect] Error inesperado procesando consulta: {}", e.getMessage(), e);
-            throw new RuntimeException("Error procesando la consulta", e);
-        }
-
-        LOGGER.info("[executeSelect] ===== FIN DE CONSULTA SELECT (LEGACY) =====");
-        return resultList;
-    }
-
-    /**
-     * Ejecuta una operación UPDATE básica (método legacy para compatibilidad).
-     * <p>
-     * NOTA: Este método mantiene la firma original para compatibilidad con código existente.
-     * Para nuevas implementaciones, se recomienda usar executeComplexUpdate().
-     *
-     * @param quey        Nombre de la tabla (mantiene nombre original del parámetro para legacy)
-     * @param field       String JSON con valores a actualizar (ej: "{\"nombre\": \"Juan\"}")
-     * @param whereClause String JSON con condiciones WHERE
-     * @param dbType      Tipo de base de datos
-     * @return Número de filas actualizadas
-     * @throws IOException Si hay errores de conversión JSON
-     */
-    @Transactional
-    public int executeUpdate(String quey, String field, String whereClause, String dbType) throws IOException {
-        long startTime = System.currentTimeMillis();
-
-        LOGGER.info("[executeUpdate] ===== INICIO DE UPDATE (LEGACY) =====");
-        LOGGER.info("[executeUpdate] Tabla: {}", quey);
-        LOGGER.info("[executeUpdate] DB Type: {}", dbType);
-
-        if (quey == null || quey.trim().isEmpty()) {
-            LOGGER.error("[executeUpdate] Tabla nula o vacía");
-            throw new IllegalArgumentException("El campo 'tableName' es obligatorio");
-        }
-
-        if (field == null || field.trim().isEmpty() || field.equals("{}")) {
-            LOGGER.error("[executeUpdate] Field nulo o vacío");
-            throw new IllegalArgumentException("El campo 'field' es obligatorio y no puede estar vacío");
-        }
-
-        if (whereClause == null || whereClause.trim().isEmpty() || whereClause.equals("{}")) {
-            LOGGER.error("[executeUpdate] WhereClause nulo o vacío");
-            throw new IllegalArgumentException("El campo 'whereClause' es obligatorio para evitar actualizar todos los registros");
-        }
-
-        try {
-            // Convertir JSON strings a Maps
-            Map<String, Object> valuesMap = convertJsonMap(field);
-            Map<String, Object> whereMap = convertJsonMap(whereClause);
-
-            LOGGER.debug("[executeUpdate] Values Map: {}", valuesMap);
-            LOGGER.debug("[executeUpdate] Where Map: {}", whereMap);
-
-            // Obtener conexión y metadatos
-            try (Connection conn = dataSource.getConnection()) {
-                Map<String, String> columnTypes = getTableColumnTypes(conn, quey);
-
-                // Construir la cláusula SET
-                StringBuilder query = new StringBuilder("UPDATE ").append(quey).append(" SET ");
-                List<Object> setParameters = new ArrayList<>();
-
-                for (Map.Entry<String, Object> entry : valuesMap.entrySet()) {
-                    String columnName = entry.getKey();
-                    Object value = entry.getValue();
-                    String columnType = columnTypes.get(columnName.toLowerCase());
-
-                    query.append(columnName).append(" = ").append(buildSqlCastForEpochMillis(value, columnType)).append(", ");
-                    setParameters.add(value);
-
-                    LOGGER.trace("[executeUpdate] SET: Columna '{}' - Tipo: {} - Valor: {}",
-                            columnName, columnType, value);
-                }
-
-                // Remover última coma
-                query.setLength(query.length() - 2);
-
-                // Construir WHERE clause
-                List<Object> whereParameters = new ArrayList<>();
-                String whereCondition = buildComplexWhereClause(whereMap, whereParameters);
-                query.append(" WHERE ").append(whereCondition);
-
-                LOGGER.info("[executeUpdate] SQL generado: {}", query.toString());
-
-                try (PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
-                    // Establecer parámetros SET usando setLegacyParameter
-                    int paramIndex = 1;
-                    for (Object param : setParameters) {
-                        setLegacyParameter(pstmt, paramIndex++, param);
-                    }
-
-                    // Establecer parámetros WHERE usando setLegacyParameter
-                    for (Object param : whereParameters) {
-                        setLegacyParameter(pstmt, paramIndex++, param);
-                    }
-
-                    // Ejecutar UPDATE
-                    int affectedRows = pstmt.executeUpdate();
-
-                    long endTime = System.currentTimeMillis();
-                    LOGGER.info("[executeUpdate] UPDATE completado exitosamente - {} registros actualizados en {} ms",
-                            affectedRows, (endTime - startTime));
-
-                    if (affectedRows == 0) {
-                        LOGGER.warn("[executeUpdate] ADVERTENCIA: UPDATE ejecutado pero no se actualizaron registros");
-                    }
-
-                    LOGGER.info("[executeUpdate] ===== FIN DE UPDATE (LEGACY) =====");
-                    return affectedRows;
-
-                } catch (SQLException e) {
-                    LOGGER.error("[executeUpdate] Error SQL al ejecutar UPDATE: {}", e.getMessage(), e);
-                    throw new RuntimeException("Error al ejecutar UPDATE en tabla '" + quey + "': " + e.getMessage(), e);
-                }
-
-            } catch (SQLException e) {
-                LOGGER.error("[executeUpdate] Error al obtener conexión o metadatos: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al conectar con la base de datos: " + e.getMessage(), e);
-            }
-
-        } catch (IOException e) {
-            LOGGER.error("[executeUpdate] Error al convertir JSON: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            LOGGER.error("[executeUpdate] Error inesperado: {}", e.getMessage(), e);
-            throw new RuntimeException("Error inesperado al ejecutar UPDATE", e);
-        }
-    }
-
-    /**
-     * Ejecuta una operación INSERT y retorna el registro insertado (método legacy para compatibilidad).
-     * <p>
-     * NOTA: Este método mantiene la firma original para compatibilidad con código existente.
-     * Para nuevas implementaciones, se recomienda usar executeComplexInsert().
-     *
-     * @param quey   Nombre de la tabla (mantiene nombre original del parámetro para legacy)
-     * @param field  String JSON con valores a insertar (ej: "{\"nombre\": \"Juan\"}")
-     * @param dbType Tipo de base de datos
-     * @return Map con el registro insertado completo
-     * @throws IOException Si hay errores de conversión JSON
-     */
-    @Transactional
-    public Map<String, Object> executeInsertAndGetInsertedRecord(String quey, String field, String dbType) throws IOException {
-        long startTime = System.currentTimeMillis();
-
-        LOGGER.info("[executeInsertAndGetInsertedRecord] ===== INICIO DE INSERT (LEGACY) =====");
-        LOGGER.info("[executeInsertAndGetInsertedRecord] Tabla: {}", quey);
-        LOGGER.info("[executeInsertAndGetInsertedRecord] DB Type: {}", dbType);
-
-        if (quey == null || quey.trim().isEmpty()) {
-            LOGGER.error("[executeInsertAndGetInsertedRecord] Tabla nula o vacía");
-            throw new IllegalArgumentException("El campo 'tableName' es obligatorio");
-        }
-
-        if (field == null || field.trim().isEmpty() || field.equals("{}")) {
-            LOGGER.error("[executeInsertAndGetInsertedRecord] Field nulo o vacío");
-            throw new IllegalArgumentException("El campo 'field' es obligatorio y no puede estar vacío");
-        }
-
-        try {
-            // Convertir JSON string a Map
-            Map<String, Object> valuesMap = convertJsonMap(field);
-            LOGGER.debug("[executeInsertAndGetInsertedRecord] Values Map: {}", valuesMap);
-
-            // Obtener conexión y metadatos
-            try (Connection conn = dataSource.getConnection()) {
-                Map<String, String> columnTypes = getTableColumnTypes(conn, quey);
-
-                // Construir INSERT statement
-                StringBuilder query = new StringBuilder("INSERT INTO ").append(quey).append(" (");
-                StringBuilder placeholders = new StringBuilder(") VALUES (");
-
-                for (Map.Entry<String, Object> entry : valuesMap.entrySet()) {
-                    String columnName = entry.getKey();
-                    Object value = entry.getValue();
-                    String columnType = columnTypes.get(columnName.toLowerCase());
-
-                    query.append(columnName).append(", ");
-                    placeholders.append(buildSqlCastForEpochMillis(value, columnType)).append(", ");
-
-                    LOGGER.trace("[executeInsertAndGetInsertedRecord] Columna '{}' - Tipo: {} - Valor: {}",
-                            columnName, columnType, value);
-                }
-
-                // Remover últimas comas
-                query.setLength(query.length() - 2);
-                placeholders.setLength(placeholders.length() - 2);
-                query.append(placeholders).append(")");
-
-                LOGGER.info("[executeInsertAndGetInsertedRecord] SQL generado: {}", query.toString());
-
-                try (PreparedStatement pstmt = conn.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
-                    // Establecer parámetros usando setLegacyParameter
-                    int index = 1;
-                    for (Object value : valuesMap.values()) {
-                        setLegacyParameter(pstmt, index++, value);
-                    }
-
-                    // Ejecutar INSERT
-                    int affectedRows = pstmt.executeUpdate();
-
-                    if (affectedRows == 0) {
-                        throw new SQLException("La inserción falló, no se insertó ningún registro");
-                    }
-
-                    // Obtener ID generado
-                    ResultSet generatedKeys = pstmt.getGeneratedKeys();
-                    Object insertedId = null;
-                    if (generatedKeys.next()) {
-                        insertedId = generatedKeys.getObject(1);
-                        LOGGER.debug("[executeInsertAndGetInsertedRecord] ID generado: {}", insertedId);
-                    }
-
-                    // Recuperar el registro completo insertado
-                    Map<String, Object> insertedRecord = new HashMap<>(valuesMap);
-                    if (insertedId != null) {
-                        insertedRecord.put("id", insertedId);
-                    }
-
-                    long endTime = System.currentTimeMillis();
-                    LOGGER.info("[executeInsertAndGetInsertedRecord] INSERT completado exitosamente en {} ms",
-                            (endTime - startTime));
-                    LOGGER.info("[executeInsertAndGetInsertedRecord] ===== FIN DE INSERT (LEGACY) =====");
-
-                    return insertedRecord;
-
-                } catch (SQLException e) {
-                    LOGGER.error("[executeInsertAndGetInsertedRecord] Error SQL al ejecutar INSERT: {}", e.getMessage(), e);
-                    throw new RuntimeException("Error al ejecutar INSERT en tabla '" + quey + "': " + e.getMessage(), e);
-                }
-
-            } catch (SQLException e) {
-                LOGGER.error("[executeInsertAndGetInsertedRecord] Error al obtener conexión o metadatos: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al conectar con la base de datos: " + e.getMessage(), e);
-            }
-
-        } catch (IOException e) {
-            LOGGER.error("[executeInsertAndGetInsertedRecord] Error al convertir JSON: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            LOGGER.error("[executeInsertAndGetInsertedRecord] Error inesperado: {}", e.getMessage(), e);
-            throw new RuntimeException("Error inesperado al ejecutar INSERT", e);
-        }
-    }
-
-    /**
-     * Ejecuta una operación DELETE básica (método legacy para compatibilidad).
-     * <p>
-     * NOTA: Este método mantiene la firma original para compatibilidad con código existente.
-     * Para nuevas implementaciones, se recomienda usar executeComplexDelete().
-     *
-     * @param quey        Nombre de la tabla (mantiene nombre original del parámetro para legacy)
-     * @param whereClause String JSON con condiciones WHERE
-     * @param dbType      Tipo de base de datos
-     * @return Número de filas eliminadas
-     * @throws IOException Si hay errores de conversión JSON
-     */
-    @Transactional
-    public int executeDelete(String quey, String whereClause, String dbType) throws IOException {
-        long startTime = System.currentTimeMillis();
-
-        LOGGER.info("[executeDelete] ===== INICIO DE DELETE (LEGACY) =====");
-        LOGGER.info("[executeDelete] Tabla: {}", quey);
-        LOGGER.info("[executeDelete] DB Type: {}", dbType);
-
-        if (quey == null || quey.trim().isEmpty()) {
-            LOGGER.error("[executeDelete] Tabla nula o vacía");
-            throw new IllegalArgumentException("El campo 'tableName' es obligatorio");
-        }
-
-        if (whereClause == null || whereClause.trim().isEmpty() || whereClause.equals("{}")) {
-            LOGGER.error("[executeDelete] WhereClause nulo o vacío");
-            throw new IllegalArgumentException("El campo 'whereClause' es OBLIGATORIO para evitar eliminar todos los registros");
-        }
-
-        try {
-            // Convertir JSON string a Map
-            Map<String, Object> whereMap = convertJsonMap(whereClause);
-            LOGGER.debug("[executeDelete] Where Map: {}", whereMap);
-
-            // Construir DELETE statement
-            StringBuilder query = new StringBuilder("DELETE FROM ").append(quey);
-
-            // Construir WHERE clause
-            List<Object> parameters = new ArrayList<>();
-            String whereCondition = buildComplexWhereClause(whereMap, parameters);
-            query.append(" WHERE ").append(whereCondition);
-
-            LOGGER.info("[executeDelete] SQL generado: {}", query.toString());
-
-            try (Connection conn = dataSource.getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
-
-                // Establecer parámetros WHERE usando setLegacyParameter
-                for (int i = 0; i < parameters.size(); i++) {
-                    setLegacyParameter(pstmt, i + 1, parameters.get(i));
-                }
-
-                // Ejecutar DELETE
-                int affectedRows = pstmt.executeUpdate();
-
-                long endTime = System.currentTimeMillis();
-                LOGGER.info("[executeDelete] DELETE completado exitosamente - {} registros eliminados en {} ms",
-                        affectedRows, (endTime - startTime));
-
-                if (affectedRows == 0) {
-                    LOGGER.warn("[executeDelete] ADVERTENCIA: DELETE ejecutado pero no se eliminaron registros");
-                }
-
-                LOGGER.info("[executeDelete] ===== FIN DE DELETE (LEGACY) =====");
-                return affectedRows;
-
-            } catch (SQLException e) {
-                LOGGER.error("[executeDelete] Error SQL al ejecutar DELETE: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al ejecutar DELETE en tabla '" + quey + "': " + e.getMessage(), e);
-            }
-
-        } catch (IOException e) {
-            LOGGER.error("[executeDelete] Error al convertir JSON: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            LOGGER.error("[executeDelete] Error inesperado: {}", e.getMessage(), e);
-            throw new RuntimeException("Error inesperado al ejecutar DELETE", e);
-        }
-    }
-
-    /**
-     * Obtiene todos los registros de una tabla sin filtros WHERE.
-     *
-     * @param tableName Nombre completo de la tabla (puede incluir esquema)
-     * @param dbType    Tipo de base de datos para la conexión
-     * @return Lista de mapas donde cada mapa representa una fila
-     */
-    @Transactional
-    public List<?> getAll(String tableName, String dbType) {
-        long startTime = System.currentTimeMillis();
-
-        LOGGER.info("[getAll] ===== INICIO DE GETALL =====");
-        LOGGER.info("[getAll] Tabla: {}", tableName);
-        LOGGER.info("[getAll] DB Type: {}", dbType);
-
-        if (tableName == null || tableName.trim().isEmpty()) {
-            LOGGER.error("[getAll] Tabla nula o vacía");
-            throw new IllegalArgumentException("El campo 'tableName' es obligatorio");
-        }
-
-        List<Object> resultList = new ArrayList<>();
-        String query = "SELECT * FROM " + tableName;
-
-        LOGGER.info("[getAll] Query: {}", query);
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            ResultSet rs = pstmt.executeQuery();
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            LOGGER.debug("[getAll] Columnas detectadas: {}", columnCount);
-
-            int rowCount = 0;
-            while (rs.next()) {
-                rowCount++;
-                Map<String, Object> row = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnType = metaData.getColumnTypeName(i);
-                    String columnName = metaData.getColumnName(i);
-                    Object value = rs.getObject(i);
-
-                    // Métodos legacy (getAll): devuelven fechas en formato nativo (LocalDateTime/Date)
-                    // sin conversión a epoch millis
-                    if ("money".equalsIgnoreCase(columnType)) {
-                        String moneyValue = rs.getString(i);
-                        if (moneyValue != null) {
-                            moneyValue = moneyValue.replaceAll("[^\\d.-]", "");
-                            value = new BigDecimal(moneyValue);
-                        }
-                    }
-
-                    row.put(columnName, value);
-                }
-                resultList.add(row);
-            }
-
-            long endTime = System.currentTimeMillis();
-            LOGGER.info("[getAll] Consulta completada exitosamente - {} registros procesados en {} ms",
-                    rowCount, (endTime - startTime));
-
-            LOGGER.info("[getAll] ===== FIN DE GETALL =====");
-            return resultList;
-
-        } catch (SQLException e) {
-            LOGGER.error("[getAll] Error SQL al ejecutar getAll: {}", e.getMessage(), e);
-            throw new RuntimeException("Error al obtener todos los registros de tabla '" + tableName + "': " + e.getMessage(), e);
-        }
     }
 
     /*
@@ -725,9 +374,13 @@ public class GenericCrudService {
             );
         }
 
-        // dbType es opcional - si no se proporciona, se usa la conexión por defecto
+        // dbType es obligatorio para handlerdbmaster
         if (dbType == null || dbType.trim().isEmpty()) {
-            LOGGER.debug("[executeComplexSelect] dbType no proporcionado, usando conexión por defecto");
+            LOGGER.error("[executeComplexSelect] dbType nulo o vacío");
+            throw new IllegalArgumentException(
+                    "El campo 'dbType' es obligatorio. Debe especificar el tipo de base de datos. " +
+                            "Ejemplo: 'db_openfinance'"
+            );
         }
 
         List<Object> resultList = new ArrayList<>();
@@ -773,7 +426,7 @@ public class GenericCrudService {
 
             LOGGER.info("[executeComplexSelect] Query completa: {}", fullQuery.toString());
 
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(fullQuery.toString())) {
 
                 // Establecer parámetros
@@ -980,7 +633,7 @@ public class GenericCrudService {
      * <li>{@code ?} - Para otros tipos de datos (VARCHAR, INT, etc.) o valores no-epoch</li>
      * </ul>
      *
-     * @param value       Valor a validar
+     * @param value Valor a validar
      * @param sqlTypeName Tipo SQL de la columna (obtenido de DatabaseMetaData)
      * @return Cast SQL string (ej: "?" o "?::timestamp")
      */
@@ -1005,7 +658,7 @@ public class GenericCrudService {
      * <li>Value: tipo SQL de la columna (VARCHAR, TIMESTAMP, DATE, etc.)</li>
      * </ul>
      *
-     * @param conn      Conexión a la base de datos
+     * @param conn Conexión a la base de datos
      * @param tableName Nombre completo de la tabla (puede incluir esquema)
      * @return Map con nombre de columna → tipo SQL
      * @throws SQLException Si hay error al obtener metadatos
@@ -1163,12 +816,18 @@ public class GenericCrudService {
      * <li><strong>null:</strong> {@code setNull()} con Types.NULL</li>
      * <li><strong>Boolean:</strong> {@code setBoolean()}</li>
      * <li><strong>Double:</strong> {@code setDouble()}</li>
-     * <li><strong>Long/Integer:</strong> {@code setLong()}</li>
+     * <li><strong>Long/Integer:</strong> {@code setLong()} (SIN conversión a epoch millis)</li>
      * <li><strong>Timestamp/LocalDateTime:</strong> {@code setTimestamp()}</li>
      * <li><strong>String:</strong> {@code setString()}</li>
      * <li><strong>Map/List:</strong> Convertido a JSON string para campos JSONB</li>
      * <li><strong>Otros:</strong> {@code setObject()} - delegado al driver JDBC</li>
      * </ul>
+     *
+     * <p><strong>Nota sobre epoch millis:</strong>
+     * La conversión de epoch millis SOLO se realiza cuando se conoce que la columna es de tipo DATE o TIMESTAMP.
+     * Esta información se obtiene de los metadatos de la tabla con {@link #getTableColumnTypes}.
+     * Para evitar falsos positivos (ej: números grandes como teléfonos o monedas), los números
+     * se tratan como valores numéricos regulares a menos que se use una versión sobrecargada con tipo SQL.
      *
      * @param pstmt PreparedStatement donde establecer el parámetro
      * @param index indice del parámetro (1-based)
@@ -1194,28 +853,12 @@ public class GenericCrudService {
             pstmt.setDouble(index, doubleValue);
 
         } else if (isNumeric(value)) {
-            // Validar si podría ser epoch millis válido
+            // Números se tratan como valores regulares, SIN validación de epoch millis
+            // La conversión de epoch millis se realiza SOLO cuando se conoce el tipo SQL de la columna
             try {
                 long longValue = Long.parseLong(value.toString());
-
-                if (DateConversionUtil.isValidEpochMillis(longValue)) {
-                    LOGGER.debug("[setComplexParameter] Índice {} - Epoch millis detectado: {} ({})",
-                            index, longValue, DateConversionUtil.formatEpochMillis(longValue));
-
-                    // Convertir epoch millis a Timestamp en UTC
-                    // Usar setTimestamp con Calendar UTC funciona tanto para DATE como TIMESTAMP
-                    // - PostgreSQL trunca automáticamente la hora para columnas DATE
-                    // - Para columnas TIMESTAMP preserva fecha y hora completa
-                    Timestamp sqlTimestamp = DateConversionUtil.epochMillisToSqlTimestamp(longValue);
-                    LOGGER.debug("[setComplexParameter] Índice {} - Convertido a java.sql.Timestamp: {}", index, sqlTimestamp);
-
-                    // Usar Calendar UTC para evitar conversiones automáticas de zona horaria
-                    java.util.Calendar calUTC = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
-                    pstmt.setTimestamp(index, sqlTimestamp, calUTC);
-                } else {
-                    LOGGER.trace("[setComplexParameter] Índice {} - Número regular (no epoch millis): {}", index, longValue);
-                    pstmt.setLong(index, longValue);
-                }
+                LOGGER.trace("[setComplexParameter] Índice {} - setLong({})", index, longValue);
+                pstmt.setLong(index, longValue);
             } catch (Exception e) {
                 LOGGER.warn("[setComplexParameter] Error procesando número en índice {}: {}", index, e.getMessage());
                 pstmt.setLong(index, Long.parseLong(value.toString()));
@@ -1251,64 +894,93 @@ public class GenericCrudService {
     }
 
     /**
-     * Establece un parámetro en PreparedStatement para métodos LEGACY (sin conversión de epoch millis).
+     * Versión sobrecargada de setComplexParameter que recibe el tipo SQL de la columna.
      *
-     * <p>Esta versión NO detecta ni convierte epoch millis automáticamente.
-     * Se usa en métodos legacy para mantener compatibilidad con código existente.
-     * Los números siempre se tratan como números normales, nunca como timestamps.
+     * <p>Esta versión es utilizada por executeComplexInsert y executeComplexUpdate
+     * donde SÍ conocemos el tipo SQL de la columna gracias a getTableColumnTypes().
+     *
+     * <p>Lógica especial para números:
+     * <ul>
+     * <li>Si columnType es DATE o TIMESTAMP y el número es epoch millis válido → Convierte a Timestamp</li>
+     * <li>Si columnType es numérico (BIGINT, INT, etc.) → Trata como número regular, SIN validación epoch</li>
+     * <li>Para otros tipos → Delega a setObject()</li>
+     * </ul>
      *
      * @param pstmt PreparedStatement donde establecer el parámetro
-     * @param index índice del parámetro (1-based)
-     * @param value Valor a establecer
+     * @param index indice del parámetro (1-based)
+     * @param value Valor a establecer, puede ser null
+     * @param sqlTypeName Tipo SQL de la columna (ej: "DATE", "TIMESTAMP", "BIGINT", "VARCHAR")
      * @throws SQLException Si hay error al establecer el parámetro
      */
-    private void setLegacyParameter(PreparedStatement pstmt, int index, Object value) throws SQLException {
-        LOGGER.trace("[setLegacyParameter] Índice: {} - Valor: {} - Tipo: {}",
-                index, value, value != null ? value.getClass().getSimpleName() : "null");
+    private void setComplexParameterWithType(PreparedStatement pstmt, int index, Object value, String sqlTypeName) throws SQLException {
+        LOGGER.trace("[setComplexParameterWithType] Índice: {} - Valor: {} - Tipo SQL: {}",
+                index, value, sqlTypeName);
 
         if (value == null) {
-            LOGGER.trace("[setLegacyParameter] Índice {} - Estableciendo NULL", index);
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - Estableciendo NULL", index);
             pstmt.setNull(index, Types.NULL);
 
         } else if (esBooleano(value)) {
             boolean boolValue = Boolean.parseBoolean(value.toString());
-            LOGGER.trace("[setLegacyParameter] Índice {} - setBoolean({})", index, boolValue);
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - setBoolean({})", index, boolValue);
             pstmt.setBoolean(index, boolValue);
 
         } else if (esDouble(value)) {
             double doubleValue = Double.parseDouble(value.toString());
-            LOGGER.trace("[setLegacyParameter] Índice {} - setDouble({})", index, doubleValue);
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - setDouble({})", index, doubleValue);
             pstmt.setDouble(index, doubleValue);
 
         } else if (isNumeric(value)) {
-            // LEGACY: Nunca convertir números a timestamps (a diferencia de setComplexParameter)
-            long longValue = Long.parseLong(value.toString());
-            LOGGER.trace("[setLegacyParameter] Índice {} - setLong({}) [sin detección de epoch millis]", index, longValue);
-            pstmt.setLong(index, longValue);
+            // AQUÍ está la diferencia: Validar epoch millis SOLO para columnas DATE/TIMESTAMP
+            try {
+                long longValue = Long.parseLong(value.toString());
+
+                // ✅ Convertir a epoch millis SOLO si la columna es DATE o TIMESTAMP
+                if ((DateConversionUtil.isDateType(sqlTypeName) || DateConversionUtil.isTimestampType(sqlTypeName)) &&
+                    DateConversionUtil.isValidEpochMillis(longValue)) {
+
+                    LOGGER.debug("[setComplexParameterWithType] Índice {} - Época millis detectada para columna {}: {} ({})",
+                            index, sqlTypeName, longValue, DateConversionUtil.formatEpochMillis(longValue));
+
+                    Timestamp sqlTimestamp = DateConversionUtil.epochMillisToSqlTimestamp(longValue);
+                    LOGGER.debug("[setComplexParameterWithType] Índice {} - Convertido a java.sql.Timestamp: {}", index, sqlTimestamp);
+
+                    java.util.Calendar calUTC = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
+                    pstmt.setTimestamp(index, sqlTimestamp, calUTC);
+                } else {
+                    // ✗ Para cualquier otra columna (INT, BIGINT, VARCHAR, etc.) → Número regular
+                    LOGGER.trace("[setComplexParameterWithType] Índice {} - Número regular (columna {}): {}",
+                            index, sqlTypeName, longValue);
+                    pstmt.setLong(index, longValue);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("[setComplexParameterWithType] Error procesando número en índice {}: {}", index, e.getMessage());
+                pstmt.setLong(index, Long.parseLong(value.toString()));
+            }
 
         } else if (isTimestamp(value)) {
             Timestamp sqlTimestamp = fechaTimestamp(value);
-            LOGGER.trace("[setLegacyParameter] Índice {} - setTimestamp({})", index, sqlTimestamp);
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - setTimestamp({})", index, sqlTimestamp);
             pstmt.setTimestamp(index, sqlTimestamp);
 
         } else if (esTexto(value)) {
             String stringValue = value.toString();
-            LOGGER.trace("[setLegacyParameter] Índice {} - setString({})", index, stringValue);
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - setString({})", index, stringValue);
             pstmt.setString(index, stringValue);
 
         } else if (value instanceof Map || value instanceof List) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = mapper.writeValueAsString(value);
-                LOGGER.trace("[setLegacyParameter] Índice {} - setObject como JSON: {}", index, jsonString);
+                LOGGER.trace("[setComplexParameterWithType] Índice {} - setObject como JSON: {}", index, jsonString);
                 pstmt.setObject(index, jsonString, Types.OTHER);
             } catch (Exception e) {
-                LOGGER.error("[setLegacyParameter] Error convirtiendo Map/List a JSON en índice {}: {}", index, e.getMessage(), e);
+                LOGGER.error("[setComplexParameterWithType] Error convirtiendo Map/List a JSON en índice {}: {}", index, e.getMessage(), e);
                 throw new SQLException("Error al convertir Map/List a JSON: " + e.getMessage(), e);
             }
 
         } else {
-            LOGGER.trace("[setLegacyParameter] Índice {} - setObject directo para tipo: {}", index, value.getClass().getSimpleName());
+            LOGGER.trace("[setComplexParameterWithType] Índice {} - setObject directo para tipo: {}", index, value.getClass().getSimpleName());
             pstmt.setObject(index, value);
         }
     }
@@ -1317,7 +989,7 @@ public class GenericCrudService {
 
     /**
      * Ejecuta una operación INSERT compleja utilizando formato JSON estructurado.
-     * <p>
+     *
      * que acepta los valores como un Map en lugar de un String JSON escapado, ofreciendo:
      * <ul>
      * <li><strong>Mayor legibilidad:</strong> Valores como objetos JSON nativos</li>
@@ -1375,13 +1047,16 @@ public class GenericCrudService {
             );
         }
 
-        // dbType es opcional - si no se proporciona, se usa la conexión por defecto
+        // dbType es obligatorio para handlerdbmaster
         if (dbType == null || dbType.trim().isEmpty()) {
-            LOGGER.debug("dbType no proporcionado, usando conexión por defecto");
+            throw new IllegalArgumentException(
+                    "El campo 'dbType' es obligatorio. Debe especificar el tipo de base de datos. " +
+                            "Ejemplo: 'db_openfinance'"
+            );
         }
 
-        // 2. Conectar a la BD y obtener metadatos de la tabla
-        try (Connection conn = dataSource.getConnection()) {
+        // 2. Conectar a la BD
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection()) {
 
             // 2.1. Obtener tipos de columnas de la tabla
             Map<String, String> columnTypes = getTableColumnTypes(conn, tableName);
@@ -1416,9 +1091,16 @@ public class GenericCrudService {
             try (PreparedStatement pstmt = conn.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
 
                 // 4. Establecer los valores de los parámetros con detección automática de tipos
+                // Ahora usamos setComplexParameterWithType() porque tenemos los metadatos disponibles
                 int index = 1;
-                for (Object value : values.values()) {
-                    setComplexParameter(pstmt, index++, value);
+                for (Map.Entry<String, Object> entry : values.entrySet()) {
+                    String columnName = entry.getKey();
+                    Object value = entry.getValue();
+                    String sqlTypeName = columnTypes.get(columnName.toLowerCase());
+
+                    setComplexParameterWithType(pstmt, index++, value, sqlTypeName);
+                    LOGGER.trace("[executeComplexInsert] Parámetro establecido - Índice: {} - Columna: {} - Tipo SQL: {} - Valor: {}",
+                            index - 1, columnName, sqlTypeName, value);
                 }
 
                 // 5. Ejecutar la inserción
@@ -1454,7 +1136,7 @@ public class GenericCrudService {
 
     /**
      * Ejecuta una operación UPDATE compleja con soporte para operadores avanzados en WHERE.
-     * <p>
+     *
      * acepta tanto los valores a actualizar como las condiciones WHERE como Maps estructurados,
      * con soporte completo para operadores complejos:
      * <ul>
@@ -1539,13 +1221,16 @@ public class GenericCrudService {
             );
         }
 
-        // dbType es opcional - si no se proporciona, se usa la conexión por defecto
+        // dbType es obligatorio para handlerdbmaster
         if (dbType == null || dbType.trim().isEmpty()) {
-            LOGGER.debug("dbType no proporcionado, usando conexión por defecto");
+            throw new IllegalArgumentException(
+                    "El campo 'dbType' es obligatorio. Debe especificar el tipo de base de datos. " +
+                            "Ejemplo: 'db_openfinance'"
+            );
         }
 
-        // 2. Conectar a la BD y obtener metadatos de la tabla
-        try (Connection conn = dataSource.getConnection()) {
+        // 2. Conectar a la BD
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection()) {
 
             // 2.1. Obtener tipos de columnas de la tabla
             Map<String, String> columnTypes = getTableColumnTypes(conn, tableName);
@@ -1579,14 +1264,25 @@ public class GenericCrudService {
             try (PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
 
                 // 5. Establecer parámetros para SET
+                // Usamos setComplexParameterWithType() porque tenemos metadatos de tabla
                 int paramIndex = 1;
-                for (Object value : values.values()) {
-                    setComplexParameter(pstmt, paramIndex++, value);
+                for (Map.Entry<String, Object> entry : values.entrySet()) {
+                    String columnName = entry.getKey();
+                    Object value = entry.getValue();
+                    String sqlTypeName = columnTypes.get(columnName.toLowerCase());
+
+                    setComplexParameterWithType(pstmt, paramIndex++, value, sqlTypeName);
+                    LOGGER.trace("[executeComplexUpdate] Parámetro SET establecido - Índice: {} - Columna: {} - Tipo SQL: {} - Valor: {}",
+                            paramIndex - 1, columnName, sqlTypeName, value);
                 }
 
                 // 6. Establecer parámetros para WHERE
+                // Aquí usamos setComplexParameter() porque los parámetros WHERE vienen del buildComplexWhereClause
+                // y no tenemos información de las columnas en ese contexto
                 for (Object param : whereParameters) {
                     setComplexParameter(pstmt, paramIndex++, param);
+                    LOGGER.trace("[executeComplexUpdate] Parámetro WHERE establecido - Índice: {} - Valor: {}",
+                            paramIndex - 1, param);
                 }
 
                 // 7. Ejecutar el UPDATE
@@ -1699,9 +1395,12 @@ public class GenericCrudService {
             );
         }
 
-        // dbType es opcional - si no se proporciona, se usa la conexión por defecto
+        // dbType es obligatorio para handlerdbmaster
         if (dbType == null || dbType.trim().isEmpty()) {
-            LOGGER.debug("dbType no proporcionado, usando conexión por defecto");
+            throw new IllegalArgumentException(
+                    "El campo 'dbType' es obligatorio. Debe especificar el tipo de base de datos. " +
+                            "Ejemplo: 'db_openfinance'"
+            );
         }
 
         // 2. Construir la sentencia DELETE FROM
@@ -1713,7 +1412,7 @@ public class GenericCrudService {
         query.append(" WHERE ").append(whereCondition);
 
         // 4. Ejecutar la eliminación
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = databaseFactory.createDatabase(dbType).getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
 
             // 5. Establecer parámetros para WHERE

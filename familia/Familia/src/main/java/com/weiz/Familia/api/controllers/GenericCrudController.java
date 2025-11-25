@@ -1,10 +1,7 @@
 package com.weiz.Familia.api.controllers;
 
 
-import com.weiz.Familia.dto.ComplexQueryDto;
-import com.weiz.Familia.dto.ComplexSaveDto;
-import com.weiz.Familia.dto.ComplexUpdateDto;
-import com.weiz.Familia.dto.ComplexDeleteDto;
+import com.weiz.Familia.dto.*;
 import com.weiz.Familia.dto.validation.DtoValidator;
 import com.weiz.Familia.dto.errors.ErrorResponse;
 import com.weiz.Familia.infraestructure.services.GenericCrudService;
@@ -34,6 +31,55 @@ public class GenericCrudController {
     public GenericCrudController(GenericCrudService genericCrudService, DtoValidator dtoValidator) {
         this.genericCrudService = genericCrudService;
         this.dtoValidator = dtoValidator;
+    }
+
+    @RequestMapping(value = "/getAll", method = RequestMethod.POST)
+    public ResponseEntity<?> getAll(@RequestBody GenericCrudDto body) {
+        try {
+            String whereClause = body.getWhereClause() != null ? body.getWhereClause() : "";
+            String orderClause = body.getOrderClause() != null ? body.getOrderClause() : "";
+            return new ResponseEntity<>(genericCrudService.executeSelect(body.getQuey(), whereClause,orderClause, body.getDbType()), HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("Error realizando consulta",e);
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public ResponseEntity<?> executeSave(@RequestBody GenericCrudDto body) {
+        try {
+            return new ResponseEntity<>(genericCrudService
+                    .executeInsertAndGetInsertedRecord(body.getQuey(), body.getField(), body.getDbType()), HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("Error realizando el guardado", e);
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<Void> executeUpdate(@RequestBody GenericCrudDto body) {
+        try {
+            String whereClause = body.getWhereClause() != null ? body.getWhereClause() : "";
+            int affectedRows = genericCrudService.executeUpdate(body.getQuey(), body.getField(), whereClause, body.getDbType());
+            LOGGER.info("UPDATE completado - {} registros actualizados", affectedRows);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("Error realizando el update", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> delete(@RequestBody GenericCrudDto body) {
+        try {
+            String whereClause = body.getWhereClause() != null ? body.getWhereClause() : "";
+            int affectedRows = genericCrudService.executeDelete(body.getQuey(), whereClause, body.getDbType());
+            LOGGER.info("DELETE completado - {} registros eliminados", affectedRows);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("Error realizando el delete", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
