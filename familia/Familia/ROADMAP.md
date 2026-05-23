@@ -88,25 +88,39 @@ en orden correcto, build verde.
 
 ---
 
-### F1 — Docker DB-only por defecto + perfiles · 0.5 día · [ ] No iniciada
+### F1 — Docker DB-only por defecto + perfiles · 0.5 día · [x] Cambios listos (pendiente smoke test + commit)
 
-- [ ] **F1.1** En `docker-compose.yml`: agregar `profiles: ["full"]` al
+- [x] **F1.1** En `docker-compose.yml`: agregar `profiles: ["full"]` al
       servicio `app`. El servicio `db` se queda sin perfil → arranca por defecto.
-- [ ] **F1.2** Crear `src/main/resources/application-dev.properties` con
+- [x] **F1.2** Crear `src/main/resources/application-dev.properties` con
       `spring.datasource.url=jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT_OUT}/${DB_NAME}`.
-- [ ] **F1.3** Crear `src/main/resources/application-prod.properties` con
+- [x] **F1.3** Crear `src/main/resources/application-prod.properties` con
       `spring.datasource.url=jdbc:postgresql://db:${DB_PORT_IN}/${DB_NAME}`.
-- [ ] **F1.4** Ajustar `application.properties`: dejar solo defaults comunes y
-      `spring.profiles.active=${SPRING_PROFILES_ACTIVE:dev}`. En docker-compose
-      `app` pasar `SPRING_PROFILES_ACTIVE=prod`.
-- [ ] **F1.5** `Dockerfile`: cambiar `EXPOSE ${APP_PORT_IN}` por `EXPOSE 8080`
+- [x] **F1.4** Ajustar `application.properties`: dejar defaults comunes
+      (server.port, context-path, driver, pool) y `spring.profiles.active = dev`
+      **literal** (sin placeholder, para que cambiar de perfil sea editar una
+      sola línea). En docker-compose `app` se pasa `SPRING_PROFILES_ACTIVE=prod`
+      como env var, que tiene mayor precedencia y sobrescribe el archivo.
+- [x] **F1.5** `Dockerfile`: cambiar `EXPOSE ${APP_PORT_IN}` por `EXPOSE 8080`
       literal.
-- [ ] **F1.6** Documentar en `README.md` los dos flujos:
+- [x] **F1.6** Documentar en `README.md` los dos flujos:
       - `docker compose up` → solo DB (debug local desde IDE).
       - `docker compose --profile full up` → DB + backend.
 
-**Salida esperada:** `docker compose up` levanta solo PostgreSQL en
-`localhost:5439`, el backend se debuggea desde IntelliJ con perfil `dev`.
+**Salida obtenida:** `docker compose up` ahora arranca solo PostgreSQL en
+`localhost:5439`. El backend se levanta desde IntelliJ con perfil `dev`
+(default). El flujo containerizado se invoca con `docker compose --profile
+full up`.
+
+**Smoke test pendiente antes del commit (tarea del usuario):**
+1. `docker compose up -d` → debe aparecer solo `base_de_datos` en `docker compose ps`.
+2. Arrancar `FamiliaApplication` en el IDE → log debe decir
+   `The following 1 profile is active: "dev"` y conectarse a
+   `localhost:${DB_PORT_OUT}`.
+3. `GET http://localhost:${APP_PORT_IN}/familia/ciudades` → 200/204.
+4. `docker compose down && docker compose --profile full up --build -d`
+   → ambos contenedores arriba; `GET .../ciudades` por
+   `localhost:${APP_PORT_OUT}` → 200/204.
 
 ---
 
@@ -246,16 +260,16 @@ con todas las casillas marcadas.
 | Fase | Casillas | Estado |
 |---|---|---|
 | F0. Preparación | 4/4 | [x] |
-| F1. Docker DB-only | 0/6 | [ ] |
+| F1. Docker DB-only | 6/6 | [x] (pendiente smoke test + commit) |
 | F2. Naming y paquetes | 0/7 | [ ] |
 | F3. MapStruct | 0/6 | [ ] |
 | F4. Servicios y excepciones | 0/6 | [ ] |
 | F5. Dominio | 0/3 | [ ] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **4/40** | **10%** |
+| **Total** | **10/40** | **25%** |
 
-**Próximo paso sugerido:** decidir si commitear F0 ahora (vía `quality-code-reviewer` → `git-expert`) o seguir con F1.1 (perfil `full` en `docker-compose.yml`).
+**Próximo paso sugerido:** correr el smoke test de F1 (4 pasos arriba) y, si pasa, commitear F1 con `chore(docker)` antes de iniciar F2 (renombres).
 
 ---
 
@@ -264,6 +278,10 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-05-23 — Cambio de criterio en perfiles: 'spring.profiles.active = dev' literal en application.properties (no placeholder). Cambiar de perfil = editar esa línea. La env var de docker-compose sigue overrideando para el contenedor. README simplificado. Patrón guardado en memoria (feedback-perfiles-spring-simples).`
+- `2026-05-23 — F1 smoke test exitoso (flujos A y B). Implementación lista para commit.`
+- `2026-05-23 — F1 implementada: perfil 'full' en docker-compose, application-dev/prod.properties, EXPOSE literal en Dockerfile, README con los dos flujos.`
+- `2026-05-23 — F0 commiteada como 2c46ca7 (chore(setup): prepara fase 0 con mapstruct y excluye .env). Auditoría pre-commit por quality-code-reviewer: APPROVED (solo INFO).`
 - `2026-05-23 — F0 completada. Rama refactor/familia-clean-arquitectura creada. .env fuera del index (CRITICAL #19 resuelto). pom.xml con MapStruct + Lombok + binding configurados. mvn clean compile = BUILD SUCCESS (línea base).`
 - `2026-05-23 — Plan aprobado. F6 descartada. Interfaces de servicio se eliminan (YAGNI). Roadmap creado.`
 - `2026-05-23 — AGENTS.md creado con matriz de activación de skills y convenciones del proyecto.`

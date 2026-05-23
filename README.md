@@ -149,22 +149,58 @@ Familia/
 ## Configuración
 
 ### Variables de Entorno
-El archivo `.env` contiene la configuración principal:
+
+El archivo `.env` contiene la configuración local y **no se versiona**. Para
+preparar tu copia, duplica la plantilla incluida en el repo:
+
+```bash
+cp familia/Familia/.env.example familia/Familia/.env
+# y completa los valores reales (especialmente DB_USER y DB_PASSWORD)
+```
+
+Variables disponibles (ver `.env.example`):
 
 ```properties
-# Configuración de la Aplicación
+# Aplicación
 APP_NAME=Familia
 APP_CONTEXT_PATH=/familia
-APP_PORT_IN=8080
-APP_PORT_OUT=8088
+APP_PORT_IN=8080          # puerto interno del contenedor / del backend
+APP_PORT_OUT=8089         # puerto expuesto en el host
 
-# Configuración de Base de Datos
+# Base de datos PostgreSQL
 DB_NAME=familia
-DB_HOST=localhost
-DB_USER=weizman
-DB_PASSWORD=YourStrong()Passw0rd
-DB_PORT_IN=5432
-DB_PORT_OUT=5438
+DB_HOST=localhost         # usar 'localhost' en dev, 'db' en prod (lo inyecta docker-compose)
+DB_USER=changeme
+DB_PASSWORD=changeme
+DB_PORT_IN=5432           # puerto interno de PostgreSQL en el contenedor
+DB_PORT_OUT=5439          # puerto expuesto en el host para conectarse desde el IDE
+```
+
+### Perfiles Spring
+
+| Perfil | Cuándo se usa | URL de la DB |
+|---|---|---|
+| `dev` (por defecto) | Backend corre **localmente en el IDE**, DB en Docker | `localhost:${DB_PORT_OUT}` |
+| `prod` | Backend corre **dentro de docker-compose** junto a la DB | `db:${DB_PORT_IN}` (red interna) |
+
+#### Cómo cambiar de perfil
+
+Edita una sola línea en `src/main/resources/application.properties`:
+
+```properties
+spring.profiles.active = dev    # o 'prod'
+```
+
+Eso es todo — no se necesitan flags ni variables de entorno cuando corres
+desde el IDE. En `docker-compose.yml` el servicio `app` inyecta
+`SPRING_PROFILES_ACTIVE=prod` como variable de entorno, que tiene mayor
+precedencia que el archivo y por eso el contenedor siempre arranca con
+`prod` independientemente del valor del archivo.
+
+Cómo verificar qué perfil quedó activo: en el log de arranque aparece:
+
+```
+INFO ... : The following 1 profile is active: "dev"
 ```
 
 ### Configuración de Base de Datos
@@ -175,24 +211,85 @@ La base de datos se inicializa automáticamente con:
 ## Uso
 
 ### Iniciar la Aplicación
+
+> ⚠️ **Importante — no confundir dos "perfiles" distintos:**
+>
+> En este proyecto conviven dos conceptos que se llaman parecido pero son
+> independientes:
+>
+> | Perfil | Quién lo lee | Decide |
+> |---|---|---|
+> | **Perfil de Spring** (`dev` / `prod`) | El backend Java al arrancar | A qué URL de DB conecta |
+> | **Perfil de Docker Compose** (`full`) | El comando `docker compose` | Qué **contenedores** arranca |
+>
+> Cambiar `spring.profiles.active = prod` en `application.properties`
+> **no hace** que Docker arranque el contenedor del backend — solo le dice
+> al backend a qué DB conectar **cuando** alguien lo arranca. Para que
+> Docker arranque el contenedor del backend hay que pasarle
+> `--profile full`. Lo bueno: una vez le pasas `--profile full`, el
+> `docker-compose.yml` ya inyecta `SPRING_PROFILES_ACTIVE=prod` al
+> contenedor, así que el archivo `application.properties` deja de importar
+> para ese caso.
+
+Hay **dos flujos** soportados. El flujo diario de desarrollo es el primero:
+arrancar solo PostgreSQL en Docker y correr el backend desde el IDE para
+poder debuggear con breakpoints. El segundo flujo arranca todo el stack
+containerizado y se usa cuando se quiere probar la imagen del backend o
+correr el sistema de extremo a extremo sin IDE.
+
+#### Flujo A — Desarrollo (solo DB en Docker, backend en el IDE) — por defecto
+
 ```bash
-# Construir y ejecutar todos los servicios
-docker-compose up --build
+# 1. Levantar solo PostgreSQL (el servicio `app` esta en el perfil `full`,
+#    asi que NO arranca con un `up` simple).
+cd familia/Familia
+docker compose up -d
 
-# Ejecutar en segundo plano
-docker-compose up -d --build
+# 2. Verificar que la DB esta arriba en localhost:5439 (DB_PORT_OUT).
+docker compose ps
 
-# Ver logs
-docker-compose logs -f
+# 3. Arrancar el backend desde IntelliJ / VSCode con su configuracion de
+#    run habitual (clase FamiliaApplication). Spring tomara el perfil
+#    `dev` por defecto y se conectara a localhost:5439.
+
+# 4. Detener la DB cuando termines.
+docker compose down
 ```
 
-### Detener la Aplicación
-```bash
-# Detener servicios
-docker-compose down
+#### Flujo B — Full stack containerizado (DB + backend en Docker)
 
-# Detener y eliminar volúmenes
-docker-compose down -v
+El servicio `app` está marcado con `profiles: ["full"]` en
+`docker-compose.yml`, así que **solo arranca cuando se le pasa explícitamente
+`--profile full`** al comando. El flag debe ir en todos los comandos del
+ciclo (`up`, `down`, `logs`, `ps`) para que docker-compose reconozca al
+servicio:
+
+```bash
+# Construye la imagen del backend y arranca DB + backend con el perfil Spring `prod`.
+cd familia/Familia
+docker compose --profile full up --build
+
+# En segundo plano:
+docker compose --profile full up -d --build
+
+# Ver logs:
+docker compose --profile full logs -f
+
+# Detener:
+docker compose --profile full down
+```
+
+> **Tip:** dentro del contenedor, el backend tomará siempre el perfil
+> Spring `prod` (lo inyecta `docker-compose.yml` vía
+> `SPRING_PROFILES_ACTIVE=prod`), sin importar lo que diga
+> `application.properties`. No hace falta cambiar nada en el archivo antes
+> de levantar este flujo.
+
+### Detener y limpiar
+
+```bash
+# Detener todo (cualquier perfil) y eliminar volumenes:
+docker compose --profile full down -v
 ```
 
 ## API Reference

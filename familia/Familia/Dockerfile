@@ -21,8 +21,10 @@ WORKDIR /app
 # Copiar el .jar generado desde la etapa de construcción
 COPY --from=builder /app/target/*.jar app.jar
 
-# Exponer el puerto (el puerto interno de la aplicación)
-EXPOSE ${APP_PORT_IN}
+# Exponer el puerto interno de la aplicacion.
+# EXPOSE no interpola variables de runtime, por eso va literal (debe
+# coincidir con APP_PORT_IN del .env y con server.port).
+EXPOSE 8080
 
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]

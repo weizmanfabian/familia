@@ -2,9 +2,11 @@ services:
   app:
     container_name: backend
     build: .
+    profiles: ["full"]
     ports:
       - "${APP_PORT_OUT}:${APP_PORT_IN}"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - APP_NAME=${APP_NAME}
       - APP_CONTEXT_PATH=${APP_CONTEXT_PATH}
       - APP_PORT_IN=${APP_PORT_IN}
