@@ -88,7 +88,7 @@ en orden correcto, build verde.
 
 ---
 
-### F1 — Docker DB-only por defecto + perfiles · 0.5 día · [x] Cambios listos (pendiente smoke test + commit)
+### F1 — Docker DB-only por defecto + perfiles · 0.5 día · [x] Completada (2026-05-23, commit 0f64c0b)
 
 - [x] **F1.1** En `docker-compose.yml`: agregar `profiles: ["full"]` al
       servicio `app`. El servicio `db` se queda sin perfil → arranca por defecto.
@@ -124,14 +124,15 @@ full up`.
 
 ---
 
-### F2 — Naming y paquetes (typos + camelCase + verbos + sin interfaces) · 1.0 día · [ ] No iniciada
+### F2 — Naming y paquetes (typos + camelCase + verbos + sin interfaces) · 1.0 día · [ ] En progreso (F2.1+F2.2 hechas)
 
 > Usar **IntelliJ Refactor → Rename** (Shift+F6) y **Move** (F6) para que los
 > imports se actualicen automáticamente. Commit por sub-bloque.
 
-- [ ] **F2.1** Renombrar paquete `com.weiz.Familia.infraestructure` →
-      `com.weiz.Familia.infrastructure`.
-- [ ] **F2.2** Renombrar `util.Enums` → `shared.enums`, `util.Exceptions` →
+- [x] **F2.1** Renombrar paquete `com.weiz.Familia.infraestructure` →
+      `com.weiz.familia.infrastructure` (también `com.weiz.Familia` →
+      `com.weiz.familia` en todo el árbol). Commit `67a6951`.
+- [x] **F2.2** Renombrar `util.Enums` → `shared.enums`, `util.Exceptions` →
       `shared.exceptions`. (Borrar `util` si queda vacío.)
 - [ ] **F2.3** Renombrar `api.controllers.errorHandler` →
       `api.controllers.errorhandling`. `BadRequestController` →
@@ -260,16 +261,18 @@ con todas las casillas marcadas.
 | Fase | Casillas | Estado |
 |---|---|---|
 | F0. Preparación | 4/4 | [x] |
-| F1. Docker DB-only | 6/6 | [x] (pendiente smoke test + commit) |
-| F2. Naming y paquetes | 0/7 | [ ] |
+| F1. Docker DB-only | 6/6 | [x] |
+| F2. Naming y paquetes | 2/7 | [ ] en progreso |
 | F3. MapStruct | 0/6 | [ ] |
 | F4. Servicios y excepciones | 0/6 | [ ] |
 | F5. Dominio | 0/3 | [ ] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **10/40** | **25%** |
+| **Total** | **12/40** | **30%** |
 
-**Próximo paso sugerido:** correr el smoke test de F1 (4 pasos arriba) y, si pasa, commitear F1 con `chore(docker)` antes de iniciar F2 (renombres).
+**Próximo paso sugerido:** continuar F2.3 (renombrar `errorHandler` →
+`errorhandling` y `BadRequestController` → `GlobalExceptionHandler`), F2.6
+(métodos sin verbo) y F2.7 (eliminar interfaces `I*Service`).
 
 ---
 
@@ -279,6 +282,8 @@ con todas las casillas marcadas.
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
 - `2026-05-23 — Cambio de criterio en perfiles: 'spring.profiles.active = dev' literal en application.properties (no placeholder). Cambiar de perfil = editar esa línea. La env var de docker-compose sigue overrideando para el contenedor. README simplificado. Patrón guardado en memoria (feedback-perfiles-spring-simples).`
+- `2026-05-23 — F2.1+F2.2 commiteadas como 67a6951 (refactor(packages): corrige typos y normaliza paquetes a minuscula). Auditoría pre-commit: VERDE. Renames hechos desde IntelliJ. Build verde con 26 fuentes. Previo: el commit acab7f2 mezclaba ROADMAP + renames; se hizo reset --soft y re-split en dos commits limpios.`
+- `2026-05-23 — F1 commiteada como 0f64c0b (chore(docker): separa perfiles dev y prod y deja db sola por defecto). Auditoría pre-commit: 0 BLOCKER/CRITICAL/MAJOR, 3 MINOR (2 aplicadas como Boy Scout: newline final Dockerfile + limpieza de logging comentado; la 3ra del formato '=' se deja con espacios para coincidir con el patrón InspektorRestApi).`
 - `2026-05-23 — F1 smoke test exitoso (flujos A y B). Implementación lista para commit.`
 - `2026-05-23 — F1 implementada: perfil 'full' en docker-compose, application-dev/prod.properties, EXPOSE literal en Dockerfile, README con los dos flujos.`
 - `2026-05-23 — F0 commiteada como 2c46ca7 (chore(setup): prepara fase 0 con mapstruct y excluye .env). Auditoría pre-commit por quality-code-reviewer: APPROVED (solo INFO).`
