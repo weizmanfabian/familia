@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-05-23 · **Estado global:** Plan aprobado, sin
-> ejecutar.
+> **Última actualización:** 2026-05-25 · **Estado global:** F2 cerrada
+> al 100%. Siguiente: F3 (MapStruct).
 
 ---
 
@@ -27,7 +27,7 @@
 | # | Decisión | Acordado |
 |---|---|---|
 | D1 | Alcance arquitectura: **solo corregir typos**, sin Screaming Architecture en esta iteración. | 2026-05-23 |
-| D2 | Interfaces de servicio: **eliminarlas (YAGNI)**. Solo hay una impl → `@Service class PersonaService` directo. | 2026-05-23 |
+| D2 | Interfaces de servicio: **reemplazarlas por contratos ISP granulares** (`Listable`, `Readable`, `Creatable`, `Updatable`, `Deletable`). Cada servicio implementa solo los que necesita. `CiudadService` (catálogo solo lectura) implementa solo `Listable`; `PersonaService` implementa los 5. Revisado 2026-05-25 sustituyendo la decisión YAGNI original. | 2026-05-25 |
 | D3 | `docker compose up` levanta **solo la DB** por defecto. El backend corre desde el IDE para debug. Backend en contenedor se activa con `docker compose --profile full up`. | 2026-05-23 |
 | D4 | `application.properties` se separa en perfiles `dev` (DB en `localhost:${DB_PORT_OUT}`) y `prod` (DB en `db:${DB_PORT_IN}`). Default = `dev`. | 2026-05-23 |
 | D5 | Mapeo: **MapStruct sustituye `BeanUtils.copyProperties`** en todos los puntos. | 2026-05-23 |
@@ -124,7 +124,7 @@ full up`.
 
 ---
 
-### F2 — Naming y paquetes (typos + camelCase + verbos + sin interfaces) · 1.0 día · [ ] En progreso (F2.1+F2.2 hechas)
+### F2 — Naming y paquetes (typos + camelCase + verbos + ISP) · 1.0 día · [x] Completada (2026-05-25)
 
 > Usar **IntelliJ Refactor → Rename** (Shift+F6) y **Move** (F6) para que los
 > imports se actualicen automáticamente. Commit por sub-bloque.
@@ -134,26 +134,32 @@ full up`.
       `com.weiz.familia` en todo el árbol). Commit `67a6951`.
 - [x] **F2.2** Renombrar `util.Enums` → `shared.enums`, `util.Exceptions` →
       `shared.exceptions`. (Borrar `util` si queda vacío.)
-- [ ] **F2.3** Renombrar `api.controllers.errorHandler` →
+- [x] **F2.3** Renombrar `api.controllers.errorHandler` →
       `api.controllers.errorhandling`. `BadRequestController` →
-      `GlobalExceptionHandler`.
-- [ ] **F2.4** Renombrar campos en `PersonaEntity`, `PersonaRequest`,
+      `GlobalExceptionHandler`. Commit `5588ad5`.
+- [x] **F2.4** Renombrar campos en `PersonaEntity`, `PersonaRequest`,
       `PersonaResponse`: `numero_documento` → `numeroDocumento`,
       `fecha_nacimiento` → `fechaNacimiento`, `correo_electronico` →
       `correoElectronico`. Mantener `@Column(name="numero_documento")` etc.
-      para preservar BD.
-- [ ] **F2.5** Decidir estrategia JSON: agregar
-      `spring.jackson.property-naming-strategy=SNAKE_CASE` en
-      `application.properties` si la API debe seguir exponiendo `snake_case`,
-      o documentar el cambio si pasa a `camelCase` en el contrato externo.
-- [ ] **F2.6** Renombrar métodos del controller: `get` →
+      para preservar BD. Commit `0febcda` (combinado con F2.5).
+- [x] **F2.5** Decisión: mantener contrato JSON externo en snake_case.
+      Agregado `spring.jackson.property-naming-strategy=SNAKE_CASE` en
+      `application.properties`. Java conserva camelCase y Jackson hace la
+      traducción automática. Commit `0febcda`.
+- [x] **F2.6** Renombrar métodos handler del controller: `get` →
       `consultarPorDocumento`, `put` → `actualizar`, `delete` → `eliminar`,
-      `create` → `crear`, `readAll` → `consultarTodas`. Idem en el servicio.
-- [ ] **F2.7** Eliminar interfaces `ICiudadService`, `IPersonaService`,
-      `CrudService` (decisión D2 — YAGNI). Borrar paquete `services/imp`.
-      `@Service class PersonaService` se inyecta directamente.
+      `create` → `crear`, `readAll` → `consultarTodas`. En el servicio ya
+      se renombraron como parte de F2.7. Commit `e495d4c`.
+- [x] **F2.7** Reemplazar interfaces monolíticas por contratos ISP
+      granulares en `infrastructure/services/contracts/`: `Listable`,
+      `Readable`, `Creatable`, `Updatable`, `Deletable`. Borrado
+      `CrudService`, `IPersonaService`, `ICiudadService`. `PersonaService`
+      implementa los 5; `CiudadService` solo `Listable<CiudadResponse>`.
+      Métodos del servicio en infinitivo desde el inicio. Adelanto parcial
+      de F4.2: quitado `throws InvocationTargetException, IllegalAccessException`
+      del `actualizar` y del controller `put`. Commit `aaf5e4e`.
 
-**Salida esperada:** ningún `snake_case` en Java, ningún `I*Service`,
+**Salida esperada:** ningún `snake_case` en Java, contratos ISP granulares,
 paquetes correctos, métodos con verbos en infinitivo.
 
 ---
@@ -262,17 +268,18 @@ con todas las casillas marcadas.
 |---|---|---|
 | F0. Preparación | 4/4 | [x] |
 | F1. Docker DB-only | 6/6 | [x] |
-| F2. Naming y paquetes | 2/7 | [ ] en progreso |
+| F2. Naming y paquetes | 7/7 | [x] |
 | F3. MapStruct | 0/6 | [ ] |
 | F4. Servicios y excepciones | 0/6 | [ ] |
 | F5. Dominio | 0/3 | [ ] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **12/40** | **30%** |
+| **Total** | **17/40** | **42.5%** |
 
-**Próximo paso sugerido:** continuar F2.3 (renombrar `errorHandler` →
-`errorhandling` y `BadRequestController` → `GlobalExceptionHandler`), F2.6
-(métodos sin verbo) y F2.7 (eliminar interfaces `I*Service`).
+**Próximo paso sugerido:** F3 — MapStruct sustituye `BeanUtils.copyProperties`.
+Crear `PersonaMapper` y `CiudadMapper` con `componentModel="spring"`, eliminar
+los métodos estáticos `entityToResponse`/`requestToEntity` y el `merge` con
+reflexión de las entidades, e inyectar los mappers en los servicios.
 
 ---
 
@@ -281,6 +288,11 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-05-25 — F2.6 commiteada como e495d4c (refactor(controllers): renombra handlers HTTP a verbos en infinitivo). Cierra la fase F2 al 100%. PersonaController y CiudadController quedan con readAll/get/create/put/delete renombrados a consultarTodas/consultarPorDocumento/crear/actualizar/eliminar. Las rutas HTTP y placeholders no cambian.`
+- `2026-05-25 — F2.7 commiteada como aaf5e4e (refactor(services): reemplaza interfaces monoliticas por ISP granular). Cambio D2: en vez de eliminar interfaces (YAGNI) se sustituyen por 5 contratos granulares en infrastructure/services/contracts/ (Listable, Readable, Creatable, Updatable, Deletable). CiudadService solo implementa Listable (catalogo solo GET); PersonaService los 5. Metodos del servicio en infinitivo desde el inicio. Adelanto parcial de F4.2: quitado throws InvocationTargetException/IllegalAccessException del actualizar y del put.`
+- `2026-05-25 — F2.4 + F2.5 commiteadas como 0febcda (refactor(persona): migra campos a camelCase y mantiene contrato JSON con Jackson SNAKE_CASE). Campos numero_documento/fecha_nacimiento/correo_electronico renombrados; @Column(name=...) preserva BD; spring.jackson.property-naming-strategy=SNAKE_CASE preserva contrato externo.`
+- `2026-05-25 — F2.3 commiteada como 5588ad5 (refactor(error-handling): renombra paquete errorHandler a errorhandling y clase a GlobalExceptionHandler). Rename quirurgico, similarity 98%.`
+- `2026-05-25 — Cambio de criterio en pre-commit: NO lanzar quality-code-reviewer antes de commits/push/PR. Los skills cargados al inicio (clean-code-expert, solid-expert, sonarqube-expert) garantizan calidad al escribir. Guardado en memoria (feedback-no-audit-precommit).`
 - `2026-05-23 — Cambio de criterio en perfiles: 'spring.profiles.active = dev' literal en application.properties (no placeholder). Cambiar de perfil = editar esa línea. La env var de docker-compose sigue overrideando para el contenedor. README simplificado. Patrón guardado en memoria (feedback-perfiles-spring-simples).`
 - `2026-05-25 — chore(gitignore) commiteado como 5a456a1: excluye carpeta .run/ de IntelliJ y destrackea FamiliaApplication.run.xml.`
 - `2026-05-25 — fix(packages) commiteado como 757fbe3: el commit 67a6951 solo movio archivos sin actualizar package/import; este fix completa esa parte. Auditoría: APROBADA.`
