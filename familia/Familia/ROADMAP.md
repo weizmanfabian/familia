@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-05-25 · **Estado global:** F2 cerrada
-> al 100%. Siguiente: F3 (MapStruct).
+> **Última actualización:** 2026-05-25 · **Estado global:** F3 cerrada
+> al 100%. Siguiente: F4 (servicios + excepciones + CORS).
 
 ---
 
@@ -164,24 +164,39 @@ paquetes correctos, métodos con verbos en infinitivo.
 
 ---
 
-### F3 — MapStruct sustituye BeanUtils · 1.0 día · [ ] No iniciada
+### F3 — MapStruct sustituye BeanUtils · 1.0 día · [x] Completada (2026-05-25)
 
-- [ ] **F3.1** Crear `application/mappers/PersonaMapper`:
+> Decisión revisada: los mappers viven en `infrastructure/mappers/`
+> (consistente con la organización por tipo técnico del proyecto), no en
+> `application/mappers/` como planteaba el borrador inicial.
+
+- [x] **F3.1** Crear `infrastructure/mappers/PersonaMapper`:
       `@Mapper(componentModel="spring", uses=CiudadMapper.class)` con
-      `PersonaEntity toEntity(PersonaRequest)`,
+      `PersonaEntity toEntity(PersonaRequest)` (ignora `ciudad`, `esViable`),
       `PersonaResponse toResponse(PersonaEntity)`,
-      `void actualizar(@MappingTarget PersonaEntity, PersonaRequest)`.
-- [ ] **F3.2** Crear `CiudadMapper` análogo.
-- [ ] **F3.3** Eliminar de `PersonaEntity` los métodos estáticos
-      `entityToResponse`, `requestToEntity` y el método `merge` con reflexión.
-- [ ] **F3.4** Eliminar de `CiudadEntity` el método `entityToResponse`.
-- [ ] **F3.5** Inyectar `PersonaMapper` y `CiudadMapper` en `PersonaService`
-      y `CiudadService`; reemplazar el uso de los métodos eliminados.
-- [ ] **F3.6** Verificar que MapStruct genera correctamente (mirar
-      `target/generated-sources/annotations`).
+      `void actualizar(@MappingTarget PersonaEntity, PersonaRequest)` con
+      `nullValuePropertyMappingStrategy=IGNORE` (ignora `numeroDocumento`,
+      `ciudad`, `esViable`). Commit `594212a`.
+- [x] **F3.2** Crear `CiudadMapper` con solo `toResponse(CiudadEntity)`
+      (el catálogo es solo lectura, ISP-coherente). Commit `594212a`.
+- [x] **F3.3** Eliminar de `PersonaEntity` los métodos estáticos
+      `entityToResponse`, `requestToEntity` y el método `merge` con
+      reflexión + `printStackTrace`. Commit `594212a`.
+- [x] **F3.4** Eliminar de `CiudadEntity` el método `entityToResponse`.
+      Commit `594212a`.
+- [x] **F3.5** Inyectar `PersonaMapper` y `CiudadMapper` en `PersonaService`
+      y `CiudadService` (constructor via Lombok); reemplazar el uso de los
+      métodos eliminados. Commit `594212a`.
+- [x] **F3.6** Verificado: `mvn clean compile` exitoso, MapStruct genera
+      `PersonaMapperImpl` y `CiudadMapperImpl` en
+      `target/generated-sources/annotations`.
 
-**Salida esperada:** entidades sin lógica de mapeo, servicios delegan a
-mappers, cero `BeanUtils.copyProperties`, cero reflexión.
+**Salida obtenida:** entidades sin lógica de mapeo, servicios delegan a
+mappers, cero `BeanUtils.copyProperties`, cero reflexión. Cambio de
+comportamiento intencional en PUT /personas/{id}: `actualizar()` ahora
+solo ignora nulls del request; el comportamiento viejo (ignorar también
+strings blank) impedía al cliente vaciar campos string. La semántica
+estándar MapStruct elimina ese bug latente.
 
 ---
 
@@ -269,17 +284,19 @@ con todas las casillas marcadas.
 | F0. Preparación | 4/4 | [x] |
 | F1. Docker DB-only | 6/6 | [x] |
 | F2. Naming y paquetes | 7/7 | [x] |
-| F3. MapStruct | 0/6 | [ ] |
+| F3. MapStruct | 6/6 | [x] |
 | F4. Servicios y excepciones | 0/6 | [ ] |
 | F5. Dominio | 0/3 | [ ] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **17/40** | **42.5%** |
+| **Total** | **23/40** | **57.5%** |
 
-**Próximo paso sugerido:** F3 — MapStruct sustituye `BeanUtils.copyProperties`.
-Crear `PersonaMapper` y `CiudadMapper` con `componentModel="spring"`, eliminar
-los métodos estáticos `entityToResponse`/`requestToEntity` y el `merge` con
-reflexión de las entidades, e inyectar los mappers en los servicios.
+**Próximo paso sugerido:** F4 — servicios, excepciones y CORS:
+1. Corregir el bug BLOCKER de `EnumValidationException` (no extiende Exception ni hace `super(msg)`).
+2. Renombrar `IdNotFoundException` → `RegistroNoEncontradoException`.
+3. Cambiar `PersonaService.eliminar` para usar `existsById` en vez de `findById + deleteById`.
+4. Reescribir `GlobalExceptionHandler` con `instanceof` pattern matching de Java 21 y sin raw types.
+5. Centralizar `@CrossOrigin` en un `WebMvcConfigurer` global.
 
 ---
 
@@ -288,6 +305,7 @@ reflexión de las entidades, e inyectar los mappers en los servicios.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-05-25 — F3 commiteada como 594212a (refactor(mapping): introduce MapStruct y elimina BeanUtils y reflexion). Mappers ubicados en infrastructure/mappers/ (no en application/mappers/ como planteaba el borrador original). CiudadMapper solo expone toResponse (catalogo solo lectura, ISP-coherente). PersonaMapper expone toEntity/toResponse/actualizar(@MappingTarget) con nullValuePropertyMappingStrategy=IGNORE. PersonaEntity queda sin metodos estaticos ni merge() con reflexion; CiudadEntity sin entityToResponse. Cambio de comportamiento en PUT: actualizar ahora solo ignora nulls, no strings blank.`
 - `2026-05-25 — F2.6 commiteada como e495d4c (refactor(controllers): renombra handlers HTTP a verbos en infinitivo). Cierra la fase F2 al 100%. PersonaController y CiudadController quedan con readAll/get/create/put/delete renombrados a consultarTodas/consultarPorDocumento/crear/actualizar/eliminar. Las rutas HTTP y placeholders no cambian.`
 - `2026-05-25 — F2.7 commiteada como aaf5e4e (refactor(services): reemplaza interfaces monoliticas por ISP granular). Cambio D2: en vez de eliminar interfaces (YAGNI) se sustituyen por 5 contratos granulares en infrastructure/services/contracts/ (Listable, Readable, Creatable, Updatable, Deletable). CiudadService solo implementa Listable (catalogo solo GET); PersonaService los 5. Metodos del servicio en infinitivo desde el inicio. Adelanto parcial de F4.2: quitado throws InvocationTargetException/IllegalAccessException del actualizar y del put.`
 - `2026-05-25 — F2.4 + F2.5 commiteadas como 0febcda (refactor(persona): migra campos a camelCase y mantiene contrato JSON con Jackson SNAKE_CASE). Campos numero_documento/fecha_nacimiento/correo_electronico renombrados; @Column(name=...) preserva BD; spring.jackson.property-naming-strategy=SNAKE_CASE preserva contrato externo.`
