@@ -29,9 +29,9 @@ public class PersonaController {
                 : ResponseEntity.ok(response);
     }
 
-    @GetMapping(path = "{numero_documento}")
-    public ResponseEntity<PersonaResponse> get(@PathVariable String numero_documento) {
-        return ResponseEntity.ok(personaService.readById(numero_documento));
+    @GetMapping(path = "{numeroDocumento}")
+    public ResponseEntity<PersonaResponse> get(@PathVariable String numeroDocumento) {
+        return ResponseEntity.ok(personaService.readById(numeroDocumento));
     }
 
     @PostMapping
@@ -39,14 +39,14 @@ public class PersonaController {
         return ResponseEntity.ok(personaService.create(request));
     }
 
-    @PutMapping(path = "{numero_documento}")
-    public ResponseEntity<PersonaResponse> put(@Valid @PathVariable String numero_documento, @RequestBody PersonaRequest request) throws InvocationTargetException, IllegalAccessException {
-        return ResponseEntity.ok(personaService.update(request, numero_documento));
+    @PutMapping(path = "{numeroDocumento}")
+    public ResponseEntity<PersonaResponse> put(@Valid @PathVariable String numeroDocumento, @RequestBody PersonaRequest request) throws InvocationTargetException, IllegalAccessException {
+        return ResponseEntity.ok(personaService.update(request, numeroDocumento));
     }
 
-    @DeleteMapping(path = "{numero_documento}")
-    public ResponseEntity<Void> delete(@PathVariable String numero_documento){
-        personaService.delete(numero_documento);
+    @DeleteMapping(path = "{numeroDocumento}")
+    public ResponseEntity<Void> delete(@PathVariable String numeroDocumento){
+        personaService.delete(numeroDocumento);
         return ResponseEntity.noContent().build();
     }
     

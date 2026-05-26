@@ -34,9 +34,9 @@ public class PersonaService implements IPersonaService {
 
     @Override
     public PersonaResponse create(PersonaRequest request) {
-        personaRepository.findById(request.getNumero_documento())
+        personaRepository.findById(request.getNumeroDocumento())
                 .ifPresent(p -> {
-                    throw new CustomException(String.format("La persona con documento %s ya existe", request.getNumero_documento()));
+                    throw new CustomException(String.format("La persona con documento %s ya existe", request.getNumeroDocumento()));
                 });
 
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
@@ -48,14 +48,14 @@ public class PersonaService implements IPersonaService {
     }
 
     @Override
-    public PersonaResponse readById(String numero_documento) {
-        var persona = personaRepository.findById(numero_documento).orElseThrow(()-> new IdNotFoundException("Persona"));
+    public PersonaResponse readById(String numeroDocumento) {
+        var persona = personaRepository.findById(numeroDocumento).orElseThrow(()-> new IdNotFoundException("Persona"));
         return PersonaEntity.entityToResponse(persona);
     }
 
     @Override
-    public PersonaResponse update(PersonaRequest request, String numero_documento) throws InvocationTargetException, IllegalAccessException {
-        var personaSaved = personaRepository.findById(numero_documento).orElseThrow(() -> new IdNotFoundException("Persona"));
+    public PersonaResponse update(PersonaRequest request, String numeroDocumento) throws InvocationTargetException, IllegalAccessException {
+        var personaSaved = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
         var personaCurrent = PersonaEntity.requestToEntity(request);
         personaCurrent.setCiudad(ciudad);
@@ -66,8 +66,8 @@ public class PersonaService implements IPersonaService {
     }
 
     @Override
-    public void delete(String numero_documento) {
-        personaRepository.findById(numero_documento).orElseThrow(() -> new IdNotFoundException("Persona"));
-        personaRepository.deleteById(numero_documento);
+    public void delete(String numeroDocumento) {
+        personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
+        personaRepository.deleteById(numeroDocumento);
     }
 }

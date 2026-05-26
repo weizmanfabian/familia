@@ -14,12 +14,12 @@ import java.time.LocalDate;
 @ToString
 @Builder
 public class PersonaResponse {
-    private String numero_documento;
+    private String numeroDocumento;
     private String nombre;
     private String apellidos;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fecha_nacimiento;
-    private String correo_electronico;
+    private LocalDate fechaNacimiento;
+    private String correoElectronico;
     private String telefono;
     private OcupacionEnum ocupacion;
     private CiudadResponse ciudad;

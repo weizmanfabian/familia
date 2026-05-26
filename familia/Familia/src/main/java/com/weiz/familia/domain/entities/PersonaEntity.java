@@ -22,7 +22,7 @@ import java.time.Period;
 public class PersonaEntity {
     @Id
     @Column(name = "numero_documento", nullable = false, unique = true)
-    private String numero_documento;
+    private String numeroDocumento;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -31,10 +31,10 @@ public class PersonaEntity {
     private String apellidos;
 
     @Column(name = "fecha_nacimiento", nullable = false)
-    private LocalDate fecha_nacimiento;
+    private LocalDate fechaNacimiento;
 
     @Column(name = "correo_electronico", nullable = false)
-    private String correo_electronico;
+    private String correoElectronico;
 
     @Column(name = "telefono", nullable = false)
     private String telefono;
@@ -67,7 +67,7 @@ public class PersonaEntity {
     @PostUpdate
     public void validarViabilidad(){
         LocalDate now = LocalDate.now();
-        int edad = Period.between(this.fecha_nacimiento, now).getYears();
+        int edad = Period.between(this.fechaNacimiento, now).getYears();
         this.setEsViable(edad >= 18 && edad <= 65);
 
     }
@@ -78,7 +78,7 @@ public class PersonaEntity {
 
         for (Field field : fields) {
             // Excluir campos que no deben actualizarse
-            if (field.getName().equals("numero_documento")) continue;
+            if (field.getName().equals("numeroDocumento")) continue;
             try {
                 field.setAccessible(true); //permitir el acceso a campos privados
                 Object newValue = field.get(updateData);

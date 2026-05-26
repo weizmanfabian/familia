@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Builder
 public class PersonaRequest {
     @Size(min = 5, max = 20, message = "El documento debe tener entre 5 y 20 caracteres")
-    private String numero_documento;
+    private String numeroDocumento;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
@@ -30,11 +30,11 @@ public class PersonaRequest {
     @NotNull(message = "La fecha de nacimiento es obligatoria")
     @Past(message = "La fecha de nacimiento debe ser en el pasado")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fecha_nacimiento;
+    private LocalDate fechaNacimiento;
 
     @Email(message = "Debe ser un correo electrónico válido")
     @Size(max = 100, message = "El correo no puede exceder los 100 caracteres")
-    private String correo_electronico;
+    private String correoElectronico;
 
     @Pattern(regexp = "^\\+?[0-9\\s()-]{7,15}$",
             message = "El teléfono debe ser un número válido con formato internacional")
