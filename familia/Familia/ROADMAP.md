@@ -282,7 +282,9 @@ con todas las casillas marcadas.
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
 - `2026-05-23 — Cambio de criterio en perfiles: 'spring.profiles.active = dev' literal en application.properties (no placeholder). Cambiar de perfil = editar esa línea. La env var de docker-compose sigue overrideando para el contenedor. README simplificado. Patrón guardado en memoria (feedback-perfiles-spring-simples).`
-- `2026-05-23 — F2.1+F2.2 commiteadas como 67a6951 (refactor(packages): corrige typos y normaliza paquetes a minuscula). Auditoría pre-commit: VERDE. Renames hechos desde IntelliJ. Build verde con 26 fuentes. Previo: el commit acab7f2 mezclaba ROADMAP + renames; se hizo reset --soft y re-split en dos commits limpios.`
+- `2026-05-25 — chore(gitignore) commiteado como 5a456a1: excluye carpeta .run/ de IntelliJ y destrackea FamiliaApplication.run.xml.`
+- `2026-05-25 — fix(packages) commiteado como 757fbe3: el commit 67a6951 solo movio archivos sin actualizar package/import; este fix completa esa parte. Auditoría: APROBADA.`
+- `2026-05-23 — F2.1+F2.2 commiteadas como 67a6951 (refactor(packages): corrige typos y normaliza paquetes a minuscula). Auditoría pre-commit: VERDE. Renames hechos desde IntelliJ. Build verde con 26 fuentes. Previo: el commit acab7f2 mezclaba ROADMAP + renames; se hizo reset --soft y re-split en dos commits limpios. NOTA: 67a6951 quedo INCOMPLETO — los renames de paquetes capturaron el rename pero no los package declarations; corregido en commit 757fbe3.`
 - `2026-05-23 — F1 commiteada como 0f64c0b (chore(docker): separa perfiles dev y prod y deja db sola por defecto). Auditoría pre-commit: 0 BLOCKER/CRITICAL/MAJOR, 3 MINOR (2 aplicadas como Boy Scout: newline final Dockerfile + limpieza de logging comentado; la 3ra del formato '=' se deja con espacios para coincidir con el patrón InspektorRestApi).`
 - `2026-05-23 — F1 smoke test exitoso (flujos A y B). Implementación lista para commit.`
 - `2026-05-23 — F1 implementada: perfil 'full' en docker-compose, application-dev/prod.properties, EXPOSE literal en Dockerfile, README con los dos flujos.`
