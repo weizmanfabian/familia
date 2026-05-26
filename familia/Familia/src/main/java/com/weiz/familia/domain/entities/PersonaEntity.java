@@ -1,13 +1,9 @@
 package com.weiz.familia.domain.entities;
 
-import com.weiz.familia.api.requests.PersonaRequest;
-import com.weiz.familia.api.responses.PersonaResponse;
 import com.weiz.familia.shared.enums.OcupacionEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -50,53 +46,10 @@ public class PersonaEntity {
     @JoinColumn(name = "ciudad_id", referencedColumnName = "id")
     private CiudadEntity ciudad;
 
-    public static PersonaResponse entityToResponse(PersonaEntity entity){
-        PersonaResponse res = new PersonaResponse();
-        BeanUtils.copyProperties(entity, res);
-        res.setCiudad(CiudadEntity.entityToResponse(entity.getCiudad()));
-        return res;
-    }
-
-    public static PersonaEntity requestToEntity(PersonaRequest request){
-        PersonaEntity res = new PersonaEntity();
-        BeanUtils.copyProperties(request, res);
-        return res;
-    }
-
     @PostPersist
     @PostUpdate
-    public void validarViabilidad(){
-        LocalDate now = LocalDate.now();
-        int edad = Period.between(this.fechaNacimiento, now).getYears();
+    public void validarViabilidad() {
+        int edad = Period.between(this.fechaNacimiento, LocalDate.now()).getYears();
         this.setEsViable(edad >= 18 && edad <= 65);
-
     }
-
-    public void merge(PersonaEntity updateData){
-        Class<?> clazz = this.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            // Excluir campos que no deben actualizarse
-            if (field.getName().equals("numeroDocumento")) continue;
-            try {
-                field.setAccessible(true); //permitir el acceso a campos privados
-                Object newValue = field.get(updateData);
-
-                if(newValue != null){
-                    if(newValue instanceof String strValue){
-                        if(!strValue.isBlank()){
-                            field.set(this, newValue);
-                        }
-                    } else {
-                        field.set(this, newValue);
-                    }
-                }
-            } catch (IllegalAccessException e) {
-                System.err.println("Error actualizando campo: " + field.getName());
-                e.printStackTrace();
-            }
-        }
-    }
-
 }

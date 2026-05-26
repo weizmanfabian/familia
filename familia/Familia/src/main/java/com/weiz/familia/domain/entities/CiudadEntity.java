@@ -1,9 +1,7 @@
 package com.weiz.familia.domain.entities;
 
-import com.weiz.familia.api.responses.CiudadResponse;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.BeanUtils;
 
 @Getter
 @Setter
@@ -24,10 +22,4 @@ public class CiudadEntity {
 
     @Column(name = "departamento")
     String departamento;
-
-    public static CiudadResponse entityToResponse(CiudadEntity entity) {
-        CiudadResponse response = new CiudadResponse();
-        BeanUtils.copyProperties(entity, response);
-        return response;
-    }
 }

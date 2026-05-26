@@ -5,6 +5,7 @@ import com.weiz.familia.api.responses.PersonaResponse;
 import com.weiz.familia.domain.entities.PersonaEntity;
 import com.weiz.familia.domain.repositories.CiudadRepository;
 import com.weiz.familia.domain.repositories.PersonaRepository;
+import com.weiz.familia.infrastructure.mappers.PersonaMapper;
 import com.weiz.familia.infrastructure.services.contracts.Creatable;
 import com.weiz.familia.infrastructure.services.contracts.Deletable;
 import com.weiz.familia.infrastructure.services.contracts.Listable;
@@ -32,11 +33,12 @@ public class PersonaService implements
 
     private final CiudadRepository ciudadRepository;
     private final PersonaRepository personaRepository;
+    private final PersonaMapper personaMapper;
 
     @Override
     public Set<PersonaResponse> consultarTodas() {
         return StreamSupport.stream(personaRepository.findAll().spliterator(), false)
-                .map(PersonaEntity::entityToResponse)
+                .map(personaMapper::toResponse)
                 .collect(Collectors.toSet());
     }
 
@@ -48,29 +50,28 @@ public class PersonaService implements
                 });
 
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
-        var personaPrePersist = PersonaEntity.requestToEntity(request);
+        PersonaEntity personaPrePersist = personaMapper.toEntity(request);
         personaPrePersist.setCiudad(ciudad);
         personaPrePersist.validarViabilidad();
-        var personaPersisted = personaRepository.save(personaPrePersist);
-        return PersonaEntity.entityToResponse(personaPersisted);
+        PersonaEntity personaPersisted = personaRepository.save(personaPrePersist);
+        return personaMapper.toResponse(personaPersisted);
     }
 
     @Override
     public PersonaResponse consultarPorId(String numeroDocumento) {
-        var persona = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
-        return PersonaEntity.entityToResponse(persona);
+        PersonaEntity persona = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
+        return personaMapper.toResponse(persona);
     }
 
     @Override
     public PersonaResponse actualizar(PersonaRequest request, String numeroDocumento) {
-        var personaSaved = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
+        PersonaEntity personaSaved = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
-        var personaCurrent = PersonaEntity.requestToEntity(request);
-        personaCurrent.setCiudad(ciudad);
-        personaSaved.merge(personaCurrent);
+        personaMapper.actualizar(personaSaved, request);
+        personaSaved.setCiudad(ciudad);
         personaSaved.validarViabilidad();
-        var personaPersisted = personaRepository.save(personaSaved);
-        return PersonaEntity.entityToResponse(personaPersisted);
+        PersonaEntity personaPersisted = personaRepository.save(personaSaved);
+        return personaMapper.toResponse(personaPersisted);
     }
 
     @Override

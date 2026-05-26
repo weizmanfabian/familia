@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.weiz.familia.api.responses.CiudadResponse;
-import com.weiz.familia.domain.entities.CiudadEntity;
 import com.weiz.familia.domain.repositories.CiudadRepository;
+import com.weiz.familia.infrastructure.mappers.CiudadMapper;
 import com.weiz.familia.infrastructure.services.contracts.Listable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,12 @@ import org.springframework.stereotype.Service;
 public class CiudadService implements Listable<CiudadResponse> {
 
     private final CiudadRepository ciudadRepository;
+    private final CiudadMapper ciudadMapper;
 
     @Override
     public Set<CiudadResponse> consultarTodas() {
         return StreamSupport.stream(ciudadRepository.findAll().spliterator(), false)
-                .map(CiudadEntity::entityToResponse)
+                .map(ciudadMapper::toResponse)
                 .collect(Collectors.toSet());
     }
 }
