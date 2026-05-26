@@ -1,6 +1,6 @@
-package com.weiz.Familia.domain.entities;
+package com.weiz.familia.domain.entities;
 
-import com.weiz.Familia.api.responses.CiudadResponse;
+import com.weiz.familia.api.responses.CiudadResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.BeanUtils;

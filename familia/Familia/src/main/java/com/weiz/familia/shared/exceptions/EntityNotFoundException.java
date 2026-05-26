@@ -1,4 +1,4 @@
-package com.weiz.Familia.util.Exceptions;
+package com.weiz.familia.shared.exceptions;
 
 import lombok.Getter;
 

@@ -1,13 +1,13 @@
-package com.weiz.Familia.infraestructure.services;
+package com.weiz.familia.infrastructure.services;
 
-import com.weiz.Familia.api.requests.PersonaRequest;
-import com.weiz.Familia.api.responses.PersonaResponse;
-import com.weiz.Familia.domain.entities.PersonaEntity;
-import com.weiz.Familia.domain.repositories.CiudadRepository;
-import com.weiz.Familia.domain.repositories.PersonaRepository;
-import com.weiz.Familia.infraestructure.services.imp.IPersonaService;
-import com.weiz.Familia.util.Exceptions.CustomException;
-import com.weiz.Familia.util.Exceptions.IdNotFoundException;
+import com.weiz.familia.api.requests.PersonaRequest;
+import com.weiz.familia.api.responses.PersonaResponse;
+import com.weiz.familia.domain.entities.PersonaEntity;
+import com.weiz.familia.domain.repositories.CiudadRepository;
+import com.weiz.familia.domain.repositories.PersonaRepository;
+import com.weiz.familia.infrastructure.services.imp.IPersonaService;
+import com.weiz.familia.shared.exceptions.CustomException;
+import com.weiz.familia.shared.exceptions.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

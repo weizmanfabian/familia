@@ -1,7 +1,7 @@
-package com.weiz.Familia.api.controllers;
+package com.weiz.familia.api.controllers;
 
-import com.weiz.Familia.api.responses.CiudadResponse;
-import com.weiz.Familia.infraestructure.services.imp.ICiudadService;
+import com.weiz.familia.api.responses.CiudadResponse;
+import com.weiz.familia.infrastructure.services.imp.ICiudadService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

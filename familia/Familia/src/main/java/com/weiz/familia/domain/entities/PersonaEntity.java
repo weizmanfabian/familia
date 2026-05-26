@@ -1,8 +1,8 @@
-package com.weiz.Familia.domain.entities;
+package com.weiz.familia.domain.entities;
 
-import com.weiz.Familia.api.requests.PersonaRequest;
-import com.weiz.Familia.api.responses.PersonaResponse;
-import com.weiz.Familia.util.Enums.OcupacionEnum;
+import com.weiz.familia.api.requests.PersonaRequest;
+import com.weiz.familia.api.responses.PersonaResponse;
+import com.weiz.familia.shared.enums.OcupacionEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.BeanUtils;

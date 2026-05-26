@@ -1,4 +1,4 @@
-package com.weiz.Familia;
+package com.weiz.familia;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;

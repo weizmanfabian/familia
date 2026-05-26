@@ -1,8 +1,8 @@
-package com.weiz.Familia.api.controllers;
+package com.weiz.familia.api.controllers;
 
-import com.weiz.Familia.api.requests.PersonaRequest;
-import com.weiz.Familia.api.responses.PersonaResponse;
-import com.weiz.Familia.infraestructure.services.imp.IPersonaService;
+import com.weiz.familia.api.requests.PersonaRequest;
+import com.weiz.familia.api.responses.PersonaResponse;
+import com.weiz.familia.infrastructure.services.imp.IPersonaService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

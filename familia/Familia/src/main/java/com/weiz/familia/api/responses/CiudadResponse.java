@@ -1,6 +1,5 @@
-package com.weiz.Familia.api.responses;
+package com.weiz.familia.api.responses;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 @NoArgsConstructor

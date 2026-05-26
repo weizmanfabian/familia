@@ -1,6 +1,6 @@
-package com.weiz.Familia.infraestructure.services.imp;
+package com.weiz.familia.infrastructure.services.imp;
 
-import com.weiz.Familia.api.responses.CiudadResponse;
+import com.weiz.familia.api.responses.CiudadResponse;
 
 import java.util.Set;
 

@@ -1,7 +1,6 @@
-package com.weiz.Familia.api.requests;
+package com.weiz.familia.api.requests;
 
-import com.weiz.Familia.domain.entities.CiudadEntity;
-import com.weiz.Familia.util.Enums.OcupacionEnum;
+import com.weiz.familia.shared.enums.OcupacionEnum;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

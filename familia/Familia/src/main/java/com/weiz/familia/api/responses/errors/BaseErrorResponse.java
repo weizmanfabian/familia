@@ -1,4 +1,4 @@
-package com.weiz.Familia.api.responses.errors;
+package com.weiz.familia.api.responses.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

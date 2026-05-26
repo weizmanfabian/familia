@@ -1,4 +1,4 @@
-package com.weiz.Familia.util.Exceptions;
+package com.weiz.familia.shared.exceptions;
 
 public class IdNotFoundException extends RuntimeException {
     private static final String ERROR_MESSAGE = "Registro no existe en %s";

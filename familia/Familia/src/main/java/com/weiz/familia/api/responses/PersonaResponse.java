@@ -1,7 +1,7 @@
-package com.weiz.Familia.api.responses;
+package com.weiz.familia.api.responses;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.weiz.Familia.util.Enums.OcupacionEnum;
+import com.weiz.familia.shared.enums.OcupacionEnum;
 import lombok.*;
 
 import java.time.LocalDate;

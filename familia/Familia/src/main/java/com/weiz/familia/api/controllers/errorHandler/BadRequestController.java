@@ -1,11 +1,11 @@
-package com.weiz.Familia.api.controllers.errorHandler;
+package com.weiz.familia.api.controllers.errorHandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.weiz.Familia.api.responses.errors.BaseErrorResponse;
-import com.weiz.Familia.api.responses.errors.ErrorResponse;
-import com.weiz.Familia.api.responses.errors.ErrorsResponse;
-import com.weiz.Familia.util.Exceptions.CustomException;
-import com.weiz.Familia.util.Exceptions.IdNotFoundException;
+import com.weiz.familia.api.responses.errors.BaseErrorResponse;
+import com.weiz.familia.api.responses.errors.ErrorResponse;
+import com.weiz.familia.api.responses.errors.ErrorsResponse;
+import com.weiz.familia.shared.exceptions.CustomException;
+import com.weiz.familia.shared.exceptions.IdNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
