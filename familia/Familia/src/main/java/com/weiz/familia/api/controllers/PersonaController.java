@@ -21,7 +21,7 @@ public class PersonaController {
     private final PersonaService personaService;
 
     @GetMapping
-    public ResponseEntity<Set<PersonaResponse>> readAll() {
+    public ResponseEntity<Set<PersonaResponse>> consultarTodas() {
         Set<PersonaResponse> response = personaService.consultarTodas();
         return response.isEmpty()
                 ? ResponseEntity.noContent().build()
@@ -29,22 +29,22 @@ public class PersonaController {
     }
 
     @GetMapping(path = "{numeroDocumento}")
-    public ResponseEntity<PersonaResponse> get(@PathVariable String numeroDocumento) {
+    public ResponseEntity<PersonaResponse> consultarPorDocumento(@PathVariable String numeroDocumento) {
         return ResponseEntity.ok(personaService.consultarPorId(numeroDocumento));
     }
 
     @PostMapping
-    public ResponseEntity<PersonaResponse> create(@Valid @RequestBody PersonaRequest request) {
+    public ResponseEntity<PersonaResponse> crear(@Valid @RequestBody PersonaRequest request) {
         return ResponseEntity.ok(personaService.crear(request));
     }
 
     @PutMapping(path = "{numeroDocumento}")
-    public ResponseEntity<PersonaResponse> put(@Valid @PathVariable String numeroDocumento, @RequestBody PersonaRequest request) {
+    public ResponseEntity<PersonaResponse> actualizar(@Valid @PathVariable String numeroDocumento, @RequestBody PersonaRequest request) {
         return ResponseEntity.ok(personaService.actualizar(request, numeroDocumento));
     }
 
     @DeleteMapping(path = "{numeroDocumento}")
-    public ResponseEntity<Void> delete(@PathVariable String numeroDocumento){
+    public ResponseEntity<Void> eliminar(@PathVariable String numeroDocumento){
         personaService.eliminar(numeroDocumento);
         return ResponseEntity.noContent().build();
     }

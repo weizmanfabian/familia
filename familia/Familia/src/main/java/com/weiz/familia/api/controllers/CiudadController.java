@@ -21,7 +21,7 @@ public class CiudadController {
     private final Listable<CiudadResponse> ciudadService;
 
     @GetMapping
-    public ResponseEntity<Set<CiudadResponse>> readAll(){
+    public ResponseEntity<Set<CiudadResponse>> consultarTodas(){
         Set<CiudadResponse> res = ciudadService.consultarTodas();
         return res.isEmpty()
                 ? ResponseEntity.noContent().build()
