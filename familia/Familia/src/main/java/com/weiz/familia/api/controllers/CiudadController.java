@@ -1,7 +1,7 @@
 package com.weiz.familia.api.controllers;
 
 import com.weiz.familia.api.responses.CiudadResponse;
-import com.weiz.familia.infrastructure.services.imp.ICiudadService;
+import com.weiz.familia.infrastructure.services.contracts.Listable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +18,11 @@ import java.util.Set;
 @Slf4j
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CiudadController {
-    private final ICiudadService ciudadService;
+    private final Listable<CiudadResponse> ciudadService;
 
     @GetMapping
     public ResponseEntity<Set<CiudadResponse>> readAll(){
-        Set<CiudadResponse> res = ciudadService.readAll();
+        Set<CiudadResponse> res = ciudadService.consultarTodas();
         return res.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(res);
