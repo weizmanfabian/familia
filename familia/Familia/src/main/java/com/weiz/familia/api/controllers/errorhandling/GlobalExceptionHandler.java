@@ -1,4 +1,4 @@
-package com.weiz.familia.api.controllers.errorHandler;
+package com.weiz.familia.api.controllers.errorhandling;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.weiz.familia.api.responses.errors.BaseErrorResponse;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class BadRequestController {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public BaseErrorResponse handleCustomException(CustomException exception, HttpServletRequest request) {
