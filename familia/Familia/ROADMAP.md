@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-05-31 · **Estado global:** F5 cerrada
-> al 100%. Siguiente: F7 (pruebas).
+> **Última actualización:** 2026-06-01 · **Estado global:** F7 cerrada
+> al 100%. Siguiente: F8 (cierre de calidad).
 
 ---
 
@@ -262,25 +262,37 @@ prueba expuestos.
 
 ---
 
-### F7 — Pruebas · 1.5 días · [ ] No iniciada
+### F7 — Pruebas · 1.5 días · [x] Completada (2026-06-01)
 
 > Numerado como F7 porque la F6 (Screaming Architecture) fue descartada (D1).
+> Todas las pruebas con datos ficticios (sin PII). 20 tests en verde.
 
-- [ ] **F7.1** Unit tests de `PersonaService` con Mockito: happy paths para
-      `crear`, `actualizar`, `consultarPorDocumento`, `eliminar`,
-      `consultarTodas`. Error paths: persona no existe, ciudad no existe,
-      documento duplicado.
-- [ ] **F7.2** Unit tests del `PersonaMapper`: verificar el mapeo
-      `Request → Entity`, `Entity → Response`, y `actualizar` con
-      `@MappingTarget`.
-- [ ] **F7.3** Test parametrizado de `PersonaEntity.calcularViabilidad`:
-      edades 17 → false, 18 → true, 65 → true, 66 → false.
-- [ ] **F7.4** Integration test `@SpringBootTest + @AutoConfigureMockMvc`
-      para `POST /personas` con `@Testcontainers` (PostgreSQL real). Agregar
-      dep `org.testcontainers:postgresql` en `pom.xml` con scope `test`.
+- [x] **F7.1** `PersonaServiceTest` con Mockito (`@Mock` repos + mapper,
+      `@InjectMocks`). 11 tests: happy + error paths de `crear` (duplicado,
+      ciudad inexistente), `consultarPorId`, `actualizar` (persona/ciudad
+      inexistente), `eliminar` (existe / no existe, sin doble query) y
+      `consultarTodas`.
+- [x] **F7.2** `PersonaMapperTest` (3 tests) valida el MapStruct generado:
+      `toEntity` (ignora ciudad/esViable), `toResponse` (ciudad anidada) y
+      `actualizar` con `@MappingTarget` (ignora nulls y campos protegidos).
+      Mini contexto Spring que escanea `infrastructure.mappers`.
+- [x] **F7.3** `PersonaEntityTest` parametrizado: 17→false, 18→true,
+      65→true, 66→false.
+- [x] **F7.4** `PersonaIntegrationTest` (`@SpringBootTest` +
+      `@AutoConfigureMockMvc`) hace `POST /personas` real contra PostgreSQL
+      en Testcontainers. Base `AbstractPostgresIntegrationTest` con
+      contenedor + `@DynamicPropertySource`; `FamiliaApplicationTests` la
+      extiende para que `contextLoads` corra con BD real. Deps
+      `org.testcontainers:postgresql` y `junit-jupiter` (scope test).
+      `@Testcontainers(disabledWithoutDocker = true)` salta los tests si no
+      hay Docker (build verde en CI/máquinas sin Docker). Esquema generado
+      con `ddl-auto=create-drop` en `src/test/resources/application.properties`
+      (props de test sin los placeholders de `.env`, que solo se resuelven
+      en `main()`).
 
-**Salida esperada:** cobertura significativa de los flujos principales,
-sin tests integrados a una BD compartida.
+**Salida obtenida:** 20 tests verdes (4 entity + 3 mapper + 11 service +
+1 integración + 1 contextLoads). Cobertura de los flujos principales sin
+BD compartida.
 
 ---
 
@@ -310,16 +322,16 @@ con todas las casillas marcadas.
 | F3. MapStruct | 6/6 | [x] |
 | F4. Servicios y excepciones | 6/6 | [x] |
 | F5. Dominio | 3/3 | [x] |
-| F7. Pruebas | 0/4 | [ ] |
+| F7. Pruebas | 4/4 | [x] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **32/40** | **80%** |
+| **Total** | **36/40** | **90%** |
 
-**Próximo paso sugerido:** F7 — pruebas (la F6 se descartó por D1):
-1. Unit tests de `PersonaService` con Mockito (happy + error paths).
-2. Unit tests del `PersonaMapper` (`toEntity`, `toResponse`, `actualizar`).
-3. Test parametrizado de `PersonaEntity.calcularViabilidad` (17→false,
-   18→true, 65→true, 66→false).
-4. Integration test con `@SpringBootTest` + `@Testcontainers` (PostgreSQL).
+**Próximo paso sugerido:** F8 — cierre de calidad:
+1. `mvn clean verify` verde (con Docker arriba corre el integration test;
+   sin Docker se salta por `disabledWithoutDocker`).
+2. Actualizar `README.md` con los flujos (docker dev-only-db, perfiles,
+   correr desde IDE, correr pruebas con Testcontainers).
+3. Abrir el PR de la rama vía `git-expert`.
 
 ---
 
@@ -328,6 +340,7 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-06-01 — F7 cerrada (20 tests verdes). F7.1 PersonaServiceTest (Mockito, 11). F7.2 PersonaMapperTest (3, @SpringJUnitConfig escaneando infrastructure.mappers para inyectar los Impl generados). F7.3 PersonaEntityTest parametrizado (4). F7.4 PersonaIntegrationTest con Testcontainers PostgreSQL; base AbstractPostgresIntegrationTest + @DynamicPropertySource; FamiliaApplicationTests la extiende. Props de test en src/test/resources/application.properties (sin placeholders de .env, que solo se resuelven en main(); ddl-auto=create-drop). disabledWithoutDocker=true para no romper el build sin Docker. Datos ficticios (sin PII). Gotchas de entorno del usuario (no del codigo): (1) PATH de Machine con una entrada basura pegada (PyCharm\\bin + maven\\bin sin ';') rompia Testcontainers con InvalidPathException; se removio la entrada. (2) Docker Desktop usa el contexto desktop-linux (npipe dockerDesktopLinuxEngine) pero DOCKER_HOST vacio hacia que Testcontainers cayera al pipe docker_engine -> HTTP 400; se fija DOCKER_HOST=npipe:////./pipe/dockerDesktopLinuxEngine (scope User).`
 - `2026-05-31 — F5 implementada (pendiente smoke test + commit). F5.1: validarViabilidad renombrado a calcularViabilidad y quitados @PostPersist/@PostUpdate de PersonaEntity; antes corria dos veces (listener JPA + llamada explicita en el servicio), ahora solo explicita antes de save() en crear/actualizar. F5.2: constantes EDAD_VIABLE_MIN=18 y EDAD_VIABLE_MAX=65 como private static final int en PersonaEntity (YAGNI: no se creo ReglasViabilidad). F5.3: TestController borrado (hallazgo #13); Actuator ya expone /familia/actuator/health.`
 - `2026-05-31 — Smoke test F4 destapa dos cosas. (1) BUG real preexistente: los @ExceptionHandler devolvian BaseErrorResponse sin fijar status HTTP -> Spring respondia 200 OK con body que decia code 400. Corregido: GlobalExceptionHandler ahora devuelve ResponseEntity<BaseErrorResponse> con .status(...); validacion/formato/duplicado -> 400, RegistroNoEncontrado -> 404. (2) Decision D9: se revierte la parte JSON de F2.5/D6 -> contrato JSON en camelCase (numeroDocumento, fechaNacimiento, correoElectronico, idCiudad), snake_case solo en BD via @Column. Eliminada la linea spring.jackson.property-naming-strategy=SNAKE_CASE de application.properties.`
 - `2026-05-25 — F4 implementada (pendiente smoke test + commit). Cambios: F4.1 EnumValidationException ahora extiende RuntimeException y llama super(msg) (BLOCKER #9 cerrado). F4.2 ya estaba cerrada por F2.7. F4.3 IdNotFoundException -> RegistroNoEncontradoException via git mv (preserva historia). F4.4 PersonaService.eliminar usa existsById en vez de findById+deleteById. F4.5 GlobalExceptionHandler reescrito con instanceof pattern matching (Java 21), sin raw types, helpers construirErrorResponse/construirErroresResponse para eliminar duplicacion, mensajes en constantes. F4.6 @CrossOrigin centralizado en shared/config/WebConfig implementando WebMvcConfigurer. Adicional YAGNI: borrada EntityNotFoundException (sin usos, se solapaba con RegistroNoEncontradoException).`
