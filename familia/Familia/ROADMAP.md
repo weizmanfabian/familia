@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-05-25 · **Estado global:** F4 cerrada
-> al 100%. Siguiente: F5 (dominio y reglas de negocio).
+> **Última actualización:** 2026-05-31 · **Estado global:** F5 cerrada
+> al 100%. Siguiente: F7 (pruebas).
 
 ---
 
@@ -242,20 +242,23 @@ CORS centralizado, bug BLOCKER #9 cerrado, una sola excepción de
 
 ---
 
-### F5 — Dominio y reglas de negocio · 0.5 día · [ ] No iniciada
+### F5 — Dominio y reglas de negocio · 0.5 día · [x] Completada (2026-05-31)
 
-- [ ] **F5.1** Mover el cálculo de `esViable` de `@PostPersist/@PostUpdate`
-      a un método del dominio `calcularViabilidad()` invocado en
-      `PersonaService.crear` y `PersonaService.actualizar` **antes** de
-      `save()`.
-- [ ] **F5.2** Extraer constantes mágicas: `EDAD_VIABLE_MIN = 18`,
-      `EDAD_VIABLE_MAX = 65` (en `PersonaEntity` o en una clase
-      `ReglasViabilidad`).
-- [ ] **F5.3** Decidir destino de `TestController`: borrarlo, o moverlo a
-      `/actuator/health/familia` con `@Endpoint`.
+- [x] **F5.1** El método del dominio se renombró `validarViabilidad` →
+      `calcularViabilidad` (calcula y asigna `esViable`, no valida) y se le
+      quitaron `@PostPersist/@PostUpdate`. Antes corría dos veces (listener
+      JPA + llamada explícita); ahora solo se invoca explícitamente en
+      `PersonaService.crear` y `actualizar` **antes** de `save()`.
+- [x] **F5.2** Constantes `EDAD_VIABLE_MIN = 18` y `EDAD_VIABLE_MAX = 65`
+      extraídas como `private static final int` en `PersonaEntity` (regla
+      cohesiva con la entidad; YAGNI: no se creó `ReglasViabilidad`).
+- [x] **F5.3** `TestController` (GET `/test` → "Success!!") **borrado**
+      (hallazgo #13). Actuator ya expone `/familia/actuator/health` para
+      chequeo de conectividad; el endpoint era redundante e inseguro.
 
-**Salida esperada:** la viabilidad se calcula antes de persistir, sin
-listeners JPA. Sin endpoints de prueba expuestos.
+**Salida obtenida:** la viabilidad se calcula una sola vez antes de
+persistir, sin listeners JPA, con constantes nombradas. Sin endpoints de
+prueba expuestos.
 
 ---
 
@@ -306,18 +309,17 @@ con todas las casillas marcadas.
 | F2. Naming y paquetes | 7/7 | [x] |
 | F3. MapStruct | 6/6 | [x] |
 | F4. Servicios y excepciones | 6/6 | [x] |
-| F5. Dominio | 0/3 | [ ] |
+| F5. Dominio | 3/3 | [x] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **29/40** | **72.5%** |
+| **Total** | **32/40** | **80%** |
 
-**Próximo paso sugerido:** F5 — dominio y reglas de negocio:
-1. Mover el cálculo de `esViable` de `@PostPersist/@PostUpdate` a un método
-   del dominio invocado **antes** de `save()` en `crear` y `actualizar`
-   (ya existe `validarViabilidad()` en `PersonaEntity` — revisar si cumple
-   ese rol o si solo nombra al listener).
-2. Extraer constantes mágicas (`EDAD_VIABLE_MIN = 18`, `EDAD_VIABLE_MAX = 65`).
-3. Decidir destino de `TestController`: borrarlo o moverlo a `/actuator`.
+**Próximo paso sugerido:** F7 — pruebas (la F6 se descartó por D1):
+1. Unit tests de `PersonaService` con Mockito (happy + error paths).
+2. Unit tests del `PersonaMapper` (`toEntity`, `toResponse`, `actualizar`).
+3. Test parametrizado de `PersonaEntity.calcularViabilidad` (17→false,
+   18→true, 65→true, 66→false).
+4. Integration test con `@SpringBootTest` + `@Testcontainers` (PostgreSQL).
 
 ---
 
@@ -326,6 +328,7 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-05-31 — F5 implementada (pendiente smoke test + commit). F5.1: validarViabilidad renombrado a calcularViabilidad y quitados @PostPersist/@PostUpdate de PersonaEntity; antes corria dos veces (listener JPA + llamada explicita en el servicio), ahora solo explicita antes de save() en crear/actualizar. F5.2: constantes EDAD_VIABLE_MIN=18 y EDAD_VIABLE_MAX=65 como private static final int en PersonaEntity (YAGNI: no se creo ReglasViabilidad). F5.3: TestController borrado (hallazgo #13); Actuator ya expone /familia/actuator/health.`
 - `2026-05-31 — Smoke test F4 destapa dos cosas. (1) BUG real preexistente: los @ExceptionHandler devolvian BaseErrorResponse sin fijar status HTTP -> Spring respondia 200 OK con body que decia code 400. Corregido: GlobalExceptionHandler ahora devuelve ResponseEntity<BaseErrorResponse> con .status(...); validacion/formato/duplicado -> 400, RegistroNoEncontrado -> 404. (2) Decision D9: se revierte la parte JSON de F2.5/D6 -> contrato JSON en camelCase (numeroDocumento, fechaNacimiento, correoElectronico, idCiudad), snake_case solo en BD via @Column. Eliminada la linea spring.jackson.property-naming-strategy=SNAKE_CASE de application.properties.`
 - `2026-05-25 — F4 implementada (pendiente smoke test + commit). Cambios: F4.1 EnumValidationException ahora extiende RuntimeException y llama super(msg) (BLOCKER #9 cerrado). F4.2 ya estaba cerrada por F2.7. F4.3 IdNotFoundException -> RegistroNoEncontradoException via git mv (preserva historia). F4.4 PersonaService.eliminar usa existsById en vez de findById+deleteById. F4.5 GlobalExceptionHandler reescrito con instanceof pattern matching (Java 21), sin raw types, helpers construirErrorResponse/construirErroresResponse para eliminar duplicacion, mensajes en constantes. F4.6 @CrossOrigin centralizado en shared/config/WebConfig implementando WebMvcConfigurer. Adicional YAGNI: borrada EntityNotFoundException (sin usos, se solapaba con RegistroNoEncontradoException).`
 - `2026-05-25 — F3 commiteada como 594212a (refactor(mapping): introduce MapStruct y elimina BeanUtils y reflexion). Mappers ubicados en infrastructure/mappers/ (no en application/mappers/ como planteaba el borrador original). CiudadMapper solo expone toResponse (catalogo solo lectura, ISP-coherente). PersonaMapper expone toEntity/toResponse/actualizar(@MappingTarget) con nullValuePropertyMappingStrategy=IGNORE. PersonaEntity queda sin metodos estaticos ni merge() con reflexion; CiudadEntity sin entityToResponse. Cambio de comportamiento en PUT: actualizar ahora solo ignora nulls, no strings blank.`
