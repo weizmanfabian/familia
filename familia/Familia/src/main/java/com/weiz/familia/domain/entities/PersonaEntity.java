@@ -16,6 +16,9 @@ import java.time.Period;
 @ToString
 @Table(name = "persona")
 public class PersonaEntity {
+    private static final int EDAD_VIABLE_MIN = 18;
+    private static final int EDAD_VIABLE_MAX = 65;
+
     @Id
     @Column(name = "numero_documento", nullable = false, unique = true)
     private String numeroDocumento;
@@ -46,10 +49,8 @@ public class PersonaEntity {
     @JoinColumn(name = "ciudad_id", referencedColumnName = "id")
     private CiudadEntity ciudad;
 
-    @PostPersist
-    @PostUpdate
-    public void validarViabilidad() {
+    public void calcularViabilidad() {
         int edad = Period.between(this.fechaNacimiento, LocalDate.now()).getYears();
-        this.setEsViable(edad >= 18 && edad <= 65);
+        this.esViable = edad >= EDAD_VIABLE_MIN && edad <= EDAD_VIABLE_MAX;
     }
 }

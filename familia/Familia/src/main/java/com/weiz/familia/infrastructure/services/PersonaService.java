@@ -52,7 +52,7 @@ public class PersonaService implements
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new RegistroNoEncontradoException("Ciudad"));
         PersonaEntity personaPrePersist = personaMapper.toEntity(request);
         personaPrePersist.setCiudad(ciudad);
-        personaPrePersist.validarViabilidad();
+        personaPrePersist.calcularViabilidad();
         PersonaEntity personaPersisted = personaRepository.save(personaPrePersist);
         return personaMapper.toResponse(personaPersisted);
     }
@@ -69,7 +69,7 @@ public class PersonaService implements
         var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new RegistroNoEncontradoException("Ciudad"));
         personaMapper.actualizar(personaSaved, request);
         personaSaved.setCiudad(ciudad);
-        personaSaved.validarViabilidad();
+        personaSaved.calcularViabilidad();
         PersonaEntity personaPersisted = personaRepository.save(personaSaved);
         return personaMapper.toResponse(personaPersisted);
     }
