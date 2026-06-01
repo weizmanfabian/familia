@@ -12,7 +12,7 @@ import com.weiz.familia.infrastructure.services.contracts.Listable;
 import com.weiz.familia.infrastructure.services.contracts.Readable;
 import com.weiz.familia.infrastructure.services.contracts.Updatable;
 import com.weiz.familia.shared.exceptions.CustomException;
-import com.weiz.familia.shared.exceptions.IdNotFoundException;
+import com.weiz.familia.shared.exceptions.RegistroNoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class PersonaService implements
                     throw new CustomException(String.format("La persona con documento %s ya existe", request.getNumeroDocumento()));
                 });
 
-        var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
+        var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new RegistroNoEncontradoException("Ciudad"));
         PersonaEntity personaPrePersist = personaMapper.toEntity(request);
         personaPrePersist.setCiudad(ciudad);
         personaPrePersist.validarViabilidad();
@@ -59,14 +59,14 @@ public class PersonaService implements
 
     @Override
     public PersonaResponse consultarPorId(String numeroDocumento) {
-        PersonaEntity persona = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
+        PersonaEntity persona = personaRepository.findById(numeroDocumento).orElseThrow(() -> new RegistroNoEncontradoException("Persona"));
         return personaMapper.toResponse(persona);
     }
 
     @Override
     public PersonaResponse actualizar(PersonaRequest request, String numeroDocumento) {
-        PersonaEntity personaSaved = personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
-        var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new IdNotFoundException("Ciudad"));
+        PersonaEntity personaSaved = personaRepository.findById(numeroDocumento).orElseThrow(() -> new RegistroNoEncontradoException("Persona"));
+        var ciudad = ciudadRepository.findById(request.getIdCiudad()).orElseThrow(() -> new RegistroNoEncontradoException("Ciudad"));
         personaMapper.actualizar(personaSaved, request);
         personaSaved.setCiudad(ciudad);
         personaSaved.validarViabilidad();
@@ -76,7 +76,9 @@ public class PersonaService implements
 
     @Override
     public void eliminar(String numeroDocumento) {
-        personaRepository.findById(numeroDocumento).orElseThrow(() -> new IdNotFoundException("Persona"));
+        if (!personaRepository.existsById(numeroDocumento)) {
+            throw new RegistroNoEncontradoException("Persona");
+        }
         personaRepository.deleteById(numeroDocumento);
     }
 }

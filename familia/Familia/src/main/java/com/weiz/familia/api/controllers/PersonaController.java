@@ -15,7 +15,6 @@ import java.util.Set;
 @RequestMapping("/personas")
 @AllArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PersonaController {
 
     private final PersonaService personaService;
