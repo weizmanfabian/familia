@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-05-25 · **Estado global:** F3 cerrada
-> al 100%. Siguiente: F4 (servicios + excepciones + CORS).
+> **Última actualización:** 2026-05-25 · **Estado global:** F4 cerrada
+> al 100%. Siguiente: F5 (dominio y reglas de negocio).
 
 ---
 
@@ -34,6 +34,7 @@
 | D6 | Naming Java: **camelCase obligatorio**. `numero_documento` → `numeroDocumento` con `@Column(name="numero_documento")` para preservar BD. | 2026-05-23 |
 | D7 | Paquetes corregidos: `infraestructure` → `infrastructure`, `imp` → `impl`, `util.Enums` → `shared.enums`, `util.Exceptions` → `shared.exceptions`, `errorHandler` → `errorhandling`. | 2026-05-23 |
 | D8 | Commits y PRs vía `git-expert` (español colombiano, Conventional Commits). Pre-commit obligatorio con `quality-code-reviewer`. | 2026-05-23 |
+| D9 | **Dos mundos de naming separados:** BD en `snake_case` (vía `@Column(name=...)` en las entidades) y código Java + contrato JSON de la API en `camelCase`. El naming de BD NO se filtra a la API. Revierte la parte JSON de D6/F2.5 (se elimina `spring.jackson.property-naming-strategy=SNAKE_CASE`). | 2026-05-31 |
 
 ---
 
@@ -146,6 +147,11 @@ full up`.
       Agregado `spring.jackson.property-naming-strategy=SNAKE_CASE` en
       `application.properties`. Java conserva camelCase y Jackson hace la
       traducción automática. Commit `0febcda`.
+      **REVERTIDA (2026-05-31):** durante el smoke test de F4 se decidió que
+      el `snake_case` vive **solo en la BD** (`@Column(name=...)`) y que el
+      contrato JSON debe ser `camelCase` (convención Java y del equipo). Son
+      dos mundos separados; Jackson no debe filtrar el naming de BD a la API.
+      Eliminada la línea `spring.jackson.property-naming-strategy`. Ver D9.
 - [x] **F2.6** Renombrar métodos handler del controller: `get` →
       `consultarPorDocumento`, `put` → `actualizar`, `delete` → `eliminar`,
       `create` → `crear`, `readAll` → `consultarTodas`. En el servicio ya
@@ -200,25 +206,39 @@ estándar MapStruct elimina ese bug latente.
 
 ---
 
-### F4 — Servicios + excepciones + CORS · 1.0 día · [ ] No iniciada
+### F4 — Servicios + excepciones + CORS · 1.0 día · [x] Completada (2026-05-25)
 
-- [ ] **F4.1** **BUG BLOCKER #9**: corregir `EnumValidationException` para
-      extender `RuntimeException` y llamar `super(msg)`.
-- [ ] **F4.2** Quitar `throws InvocationTargetException, IllegalAccessException`
-      del controller, del servicio y de la interfaz CRUD (la interfaz ya no
-      existe tras F2.7).
-- [ ] **F4.3** Renombrar `IdNotFoundException` →
-      `RegistroNoEncontradoException`.
-- [ ] **F4.4** `PersonaService.eliminar`: reemplazar `findById + deleteById`
-      por `existsById` o `try { deleteById } catch (EmptyResultDataAccessException)`.
-- [ ] **F4.5** Reescribir `GlobalExceptionHandler` con tipos genéricos
-      seguros (sin cast raw `Class<Enum>`) y `instanceof` pattern matching
-      (Java 21).
-- [ ] **F4.6** Mover `@CrossOrigin` a un `WebMvcConfigurer` global
-      (`shared.config.WebConfig`). Quitar de cada controller.
+- [x] **F4.1** **BUG BLOCKER #9**: `EnumValidationException` ahora extiende
+      `RuntimeException` y llama `super(msg)`.
+- [x] **F4.2** Ya cerrada en F2.7 (commit `aaf5e4e`): no quedan `throws
+      InvocationTargetException, IllegalAccessException` en controller ni
+      servicio; las interfaces ISP nunca los declararon.
+- [x] **F4.3** `IdNotFoundException` renombrada a
+      `RegistroNoEncontradoException` (rename con `git mv` para preservar
+      historia, similarity ~95%). Actualizados imports en `PersonaService`
+      y `GlobalExceptionHandler`.
+- [x] **F4.4** `PersonaService.eliminar` ahora usa `existsById` + `throw new
+      RegistroNoEncontradoException("Persona")` en vez de
+      `findById + deleteById` (una sola query de validación).
+- [x] **F4.5** `GlobalExceptionHandler` reescrito con `instanceof
+      InvalidFormatException ife` (pattern matching de Java 21). Eliminado
+      el cast raw `Class<Enum>` y variables muertas (`enumType`,
+      `inputValue`). Extraídos helpers `construirErrorResponse` y
+      `construirErroresResponse` para quitar duplicación; mensajes en
+      constantes.
+- [x] **F4.6** `@CrossOrigin` retirado de `PersonaController` y
+      `CiudadController`. CORS centralizado en
+      `shared/config/WebConfig` (`WebMvcConfigurer.addCorsMappings`) con
+      `allowedOriginPatterns("*")` para futura compatibilidad con
+      credenciales.
 
-**Salida esperada:** sin checked exceptions filtradas, sin raw types, CORS
-centralizado, bug BLOCKER cerrado.
+**Adicional (YAGNI):** borrada `shared/exceptions/EntityNotFoundException`
+— estaba declarada pero sin usos y se solapaba con la nueva
+`RegistroNoEncontradoException`.
+
+**Salida obtenida:** sin checked exceptions filtradas, sin raw types,
+CORS centralizado, bug BLOCKER #9 cerrado, una sola excepción de
+"no encontrado".
 
 ---
 
@@ -285,18 +305,19 @@ con todas las casillas marcadas.
 | F1. Docker DB-only | 6/6 | [x] |
 | F2. Naming y paquetes | 7/7 | [x] |
 | F3. MapStruct | 6/6 | [x] |
-| F4. Servicios y excepciones | 0/6 | [ ] |
+| F4. Servicios y excepciones | 6/6 | [x] |
 | F5. Dominio | 0/3 | [ ] |
 | F7. Pruebas | 0/4 | [ ] |
 | F8. Cierre | 0/4 | [ ] |
-| **Total** | **23/40** | **57.5%** |
+| **Total** | **29/40** | **72.5%** |
 
-**Próximo paso sugerido:** F4 — servicios, excepciones y CORS:
-1. Corregir el bug BLOCKER de `EnumValidationException` (no extiende Exception ni hace `super(msg)`).
-2. Renombrar `IdNotFoundException` → `RegistroNoEncontradoException`.
-3. Cambiar `PersonaService.eliminar` para usar `existsById` en vez de `findById + deleteById`.
-4. Reescribir `GlobalExceptionHandler` con `instanceof` pattern matching de Java 21 y sin raw types.
-5. Centralizar `@CrossOrigin` en un `WebMvcConfigurer` global.
+**Próximo paso sugerido:** F5 — dominio y reglas de negocio:
+1. Mover el cálculo de `esViable` de `@PostPersist/@PostUpdate` a un método
+   del dominio invocado **antes** de `save()` en `crear` y `actualizar`
+   (ya existe `validarViabilidad()` en `PersonaEntity` — revisar si cumple
+   ese rol o si solo nombra al listener).
+2. Extraer constantes mágicas (`EDAD_VIABLE_MIN = 18`, `EDAD_VIABLE_MAX = 65`).
+3. Decidir destino de `TestController`: borrarlo o moverlo a `/actuator`.
 
 ---
 
@@ -305,6 +326,8 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-05-31 — Smoke test F4 destapa dos cosas. (1) BUG real preexistente: los @ExceptionHandler devolvian BaseErrorResponse sin fijar status HTTP -> Spring respondia 200 OK con body que decia code 400. Corregido: GlobalExceptionHandler ahora devuelve ResponseEntity<BaseErrorResponse> con .status(...); validacion/formato/duplicado -> 400, RegistroNoEncontrado -> 404. (2) Decision D9: se revierte la parte JSON de F2.5/D6 -> contrato JSON en camelCase (numeroDocumento, fechaNacimiento, correoElectronico, idCiudad), snake_case solo en BD via @Column. Eliminada la linea spring.jackson.property-naming-strategy=SNAKE_CASE de application.properties.`
+- `2026-05-25 — F4 implementada (pendiente smoke test + commit). Cambios: F4.1 EnumValidationException ahora extiende RuntimeException y llama super(msg) (BLOCKER #9 cerrado). F4.2 ya estaba cerrada por F2.7. F4.3 IdNotFoundException -> RegistroNoEncontradoException via git mv (preserva historia). F4.4 PersonaService.eliminar usa existsById en vez de findById+deleteById. F4.5 GlobalExceptionHandler reescrito con instanceof pattern matching (Java 21), sin raw types, helpers construirErrorResponse/construirErroresResponse para eliminar duplicacion, mensajes en constantes. F4.6 @CrossOrigin centralizado en shared/config/WebConfig implementando WebMvcConfigurer. Adicional YAGNI: borrada EntityNotFoundException (sin usos, se solapaba con RegistroNoEncontradoException).`
 - `2026-05-25 — F3 commiteada como 594212a (refactor(mapping): introduce MapStruct y elimina BeanUtils y reflexion). Mappers ubicados en infrastructure/mappers/ (no en application/mappers/ como planteaba el borrador original). CiudadMapper solo expone toResponse (catalogo solo lectura, ISP-coherente). PersonaMapper expone toEntity/toResponse/actualizar(@MappingTarget) con nullValuePropertyMappingStrategy=IGNORE. PersonaEntity queda sin metodos estaticos ni merge() con reflexion; CiudadEntity sin entityToResponse. Cambio de comportamiento en PUT: actualizar ahora solo ignora nulls, no strings blank.`
 - `2026-05-25 — F2.6 commiteada como e495d4c (refactor(controllers): renombra handlers HTTP a verbos en infinitivo). Cierra la fase F2 al 100%. PersonaController y CiudadController quedan con readAll/get/create/put/delete renombrados a consultarTodas/consultarPorDocumento/crear/actualizar/eliminar. Las rutas HTTP y placeholders no cambian.`
 - `2026-05-25 — F2.7 commiteada como aaf5e4e (refactor(services): reemplaza interfaces monoliticas por ISP granular). Cambio D2: en vez de eliminar interfaces (YAGNI) se sustituyen por 5 contratos granulares en infrastructure/services/contracts/ (Listable, Readable, Creatable, Updatable, Deletable). CiudadService solo implementa Listable (catalogo solo GET); PersonaService los 5. Metodos del servicio en infinitivo desde el inicio. Adelanto parcial de F4.2: quitado throws InvocationTargetException/IllegalAccessException del actualizar y del put.`
