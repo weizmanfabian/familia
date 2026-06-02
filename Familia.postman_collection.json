@@ -1,0 +1,289 @@
+{
+  "info": {
+    "_postman_id": "4fca8c5d-c2e1-48c6-93e8-9bf9847064e4",
+    "name": "Familia",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17147091"
+  },
+  "item": [
+    {
+      "name": "HandlerDbMaster",
+      "item": [
+        {
+          "name": "getAll",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"quey\": \"SELECT * FROM persona\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/crud/getAll",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "crud",
+                "getAll"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllComplex",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"query\": \"SELECT * FROM persona\",\r\n    \"orderClause\": \"numero_documento DESC\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/crud/getAllComplex",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "crud",
+                "getAllComplex"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "save",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"field\": \"persona\",\r\n    \"values\": {\r\n        \"numero_documento\": \"1105062033\",\r\n        \"nombre\": \"Weizman\",\r\n        \"apellidos\": \"Castañeda\",\r\n        \"fecha_nacimiento\": \"1998-05-24\",\r\n        \"correo_electronico\": \"weizman@correo.com\",\r\n        \"telefono\": \"3186317937\",\r\n        \"ocupacion\": \"INDEPENDIENTE\",\r\n        \"ciudad_id\": 1\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/crud/save",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "crud",
+                "save"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "saveComplex",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"tableName\": \"persona\",\r\n    \"values\": {\r\n        \"numero_documento\": \"1105062033\",\r\n        \"nombre\": \"Weizman\",\r\n        \"apellidos\": \"Castañeda\",\r\n        \"fecha_nacimiento\": 896030376000,\r\n        \"correo_electronico\": \"weizman@correo.com\",\r\n        \"telefono\": \"3186317937\",\r\n        \"ocupacion\": \"INDEPENDIENTE\",\r\n        \"ciudad_id\": 1\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/crud/saveComplex",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "crud",
+                "saveComplex"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "personas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/personas",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "personas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "personas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "\r",
+              "let response = pm.response.json();\r",
+              "pm.collectionVariables.set(\"numeroDocumento\", response.numeroDocumento);\r",
+              "console.log(pm.collectionVariables.get(\"numeroDocumento\"));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"numeroDocumento\": \"1105062033\",\r\n    \"nombre\": \"Weizman\",\r\n    \"apellidos\": \"Castañeda\",\r\n    \"fechaNacimiento\": \"2020-05-27\",\r\n    \"correoElectronico\": \"weizman@correo.com\",\r\n    \"telefono\": \"3111111111\",\r\n    \"idCiudad\": 1,\r\n    \"ocupacion\": \"INDEPENDIENTE\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/personas",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "personas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "personas_by_id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/personas/{{numeroDocumento}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "personas",
+            "{{numeroDocumento}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "personas",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nombre\": \"Fabian\",\r\n    \"apellidos\": \" Herreño\",\r\n    \"fechaNacimiento\": \"1998-05-31\",\r\n    \"correoElectronico\": \"fabian@correo.com.co\",\r\n    \"telefono\": \"3111111113\",\r\n    \"ocupacion\": \"PENSIONADO\",\r\n    \"idCiudad\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/personas/{{numeroDocumento}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "personas",
+            "{{numeroDocumento}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "personas",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/personas/{{numeroDocumento}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "personas",
+            "{{numeroDocumento}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "port",
+      "value": "8089"
+    },
+    {
+      "key": "numero_documento",
+      "value": ""
+    },
+    {
+      "key": "url",
+      "value": "http://localhost:8089/familia"
+    },
+    {
+      "key": "numeroDocumento",
+      "value": ""
+    }
+  ]
+}
