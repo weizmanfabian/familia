@@ -1,272 +1,170 @@
-# Sistema de Gestión Familiar
+# Familia — Sistema de Gestión Familiar
 
 [![Java](https://img.shields.io/badge/Java-21-red.svg)](https://www.oracle.com/java/technologies/javase/jdk21-downloads.html)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.10-green.svg)](https://spring.io/projects/spring-boot)
-[![Docker](https://img.shields.io/badge/Docker-28.0.1-blue.svg)](https://www.docker.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.1-336791.svg)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Angular](https://img.shields.io/badge/Angular-20-dd0031.svg)](https://angular.dev/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-latest-336791.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://www.docker.com/)
 
-Sistema completo de gestión familiar desarrollado con arquitectura de microservicios, implementando las mejores prácticas de desarrollo empresarial y patrones de diseño modernos.
+Monorepo con el backend (API REST en Spring Boot) y el frontend (Angular) del
+sistema de gestión de personas y ciudades. Este README es la guía para
+**levantar y desplegar** el proyecto en tu máquina. Para el detalle de cómo
+funciona internamente y el camino de la refactorización, ver
+[`familia/ROADMAP.md`](familia/ROADMAP.md).
 
-## Tabla de Contenidos
+## Tabla de contenidos
 
-- [Descripción](#descripción)
-- [Arquitectura](#arquitectura)
-- [Tecnologías](#tecnologías)
-- [Requisitos Previos](#requisitos-previos)
-- [Instalación](#instalación)
-- [Configuración](#configuración)
-- [Uso](#uso)
-- [API Reference](#api-reference)
-- [Testing](#testing)
-- [Despliegue](#despliegue)
-- [Contribución](#contribución)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Requisitos previos](#requisitos-previos)
+- [Configuración (.env)](#configuración-env)
+- [Despliegue del backend](#despliegue-del-backend)
+  - [Flujo A — Solo la base de datos (desarrollo)](#flujo-a--solo-la-base-de-datos-desarrollo)
+  - [Flujo B — Base de datos + backend (stack completo)](#flujo-b--base-de-datos--backend-stack-completo)
+- [Despliegue del frontend](#despliegue-del-frontend)
+- [Puertos y URLs](#puertos-y-urls)
+- [Verificación](#verificación)
+- [Pruebas](#pruebas)
 - [Licencia](#licencia)
 
-## Descripción
+## Estructura del repositorio
 
-Este proyecto implementa un sistema backend robusto para la gestión de personas y familias, utilizando una arquitectura basada en microservicios con Spring Boot. La aplicación permite realizar operaciones CRUD completas sobre entidades familiares, con persistencia en PostgreSQL y despliegue containerizado con Docker.
-
-### Características Principales
-
-- **API REST**: Endpoints completamente documentados con OpenAPI/Swagger
-- **Arquitectura Limpia**: Separación clara entre capas de dominio, aplicación e infraestructura
-- **Containerización**: Despliegue completo con Docker Compose
-- **Base de Datos**: Persistencia robusta con PostgreSQL y migraciones automatizadas
-- **Validación**: Validación de datos integral con Spring Validation
-- **Manejo de Errores**: Sistema de excepciones personalizado y responses estandarizados
-
-## Arquitectura
-
-### Stack Tecnológico
-
-#### Backend
-- **Java 21**: Aprovecha las últimas características del lenguaje incluyendo Records, Pattern Matching y Sealed Classes
-- **Spring Boot 3.3.10**: Framework principal con módulos:
-  - Spring Data JPA para persistencia
-  - Spring Validation para validación de datos
-  - Spring Web para APIs RESTful
-- **PostgreSQL 16.1**: Sistema de gestión de base de datos empresarial
-- **Docker Compose**: Orquestación de contenedores para desarrollo y producción
-
-#### Arquitectura de Capas
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    API Layer                                │
-├─────────────────────────────────────────────────────────────┤
-│  Controllers │ Requests │ Responses │ Error Handlers        │
-├─────────────────────────────────────────────────────────────┤
-│                 Application Layer                           │
-├─────────────────────────────────────────────────────────────┤
-│              Services │ Use Cases                           │
-├─────────────────────────────────────────────────────────────┤
-│                  Domain Layer                               │
-├─────────────────────────────────────────────────────────────┤
-│           Entities │ Repositories │ Abstractions            │
-├─────────────────────────────────────────────────────────────┤
-│                Infrastructure Layer                         │
-├─────────────────────────────────────────────────────────────┤
-│              Database │ External Services                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Tecnologías
-
-### Herramientas de Desarrollo
-| Herramienta | Versión | Descripción |
-|-------------|---------|-------------|
-| Java | 21+ | Lenguaje principal de desarrollo |
-| Spring Boot | 3.3.10 | Framework de aplicación |
-| PostgreSQL | 16.1 | Sistema de base de datos |
-| Docker | 28.0.1 | Containerización |
-| Maven | 3.9+ | Gestión de dependencias |
-
-### IDEs Recomendados
-- **Backend**: IntelliJ IDEA 2024.3.5+ (Ultimate Edition)
-- **Base de Datos**: DBeaver 23.2.x, DataGrip, PgAdmin 4.3.x
-- **API Testing**: Postman, Insomnia
-
-## Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado:
-
-- **Docker Desktop** (versión 28.0.1 o superior)
-- **Git** (para clonar el repositorio)
-- **Postman** (opcional, para pruebas de API)
-
-### Verificación de Requisitos
-```bash
-# Verificar Docker
-docker --version
-docker-compose --version
-
-# Verificar Git
-git --version
-```
-
-## Instalación
-
-### 1. Clonar el Repositorio
-```bash
-git clone https://github.com/weizmanfabian/familia.git
-cd familia/familia/familia
-```
-
-### 2. Estructura del Proyecto
-```
-Familia/
-├── .env                          # Variables de entorno
-├── Dockerfile                    # Configuración de contenedor
-├── docker-compose.yml           # Orquestación de servicios
-├── pom.xml                      # Configuración Maven
-├── Familia.postman_collection.json  # Colección de pruebas
-├── db/
-│   └── sql/
-│       ├── create_schema.sql    # Esquema de base de datos
-│       └── data.sql             # Datos iniciales
-├── src/
-│   ├── main/
-│   │   ├── java/com/weiz/Familia/
-│   │   │   ├── api/
-│   │   │   │   ├── controllers/     # Controladores REST
-│   │   │   │   ├── requests/        # DTOs de entrada
-│   │   │   │   ├── responses/       # DTOs de salida
-│   │   │   │   └── errorHandler/    # Manejo de errores
-│   │   │   ├── domain/
-│   │   │   │   ├── entities/        # Entidades JPA
-│   │   │   │   └── repositories/    # Interfaces de repositorio
-│   │   │   ├── infraestructure/
-│   │   │   │   ├── abstracts/       # Abstracciones
-│   │   │   │   └── services/        # Implementaciones
-│   │   │   └── util/
-│   │   │       └── Exceptions/      # Excepciones personalizadas
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
+familia/                          ← raíz del monorepo (este README)
+├── familia/                      ← BACKEND (Spring Boot) — aquí vive docker-compose.yml
+│   ├── docker-compose.yml        ← orquesta db (+ backend con perfil `full`)
+│   ├── Dockerfile                ← imagen del backend (build multi-etapa)
+│   ├── .env.example              ← plantilla de variables de entorno
+│   ├── pom.xml
+│   ├── ROADMAP.md                ← bitácora de la refactorización
+│   ├── db/sql/                   ← create_schema.sql + data.sql (init de PostgreSQL)
+│   └── src/                      ← código y pruebas
+├── familia-front/                ← FRONTEND (Angular 20)
+│   └── src/
+├── Familia.postman_collection.json
+├── LICENSE
 └── README.md
 ```
 
-## Configuración
+> **Importante:** todos los comandos de Docker del backend se ejecutan **desde
+> la carpeta `familia/`** (el subdirectorio del backend), porque ahí está el
+> `docker-compose.yml`. Los comandos del frontend se ejecutan desde
+> `familia-front/`.
 
-### Variables de Entorno
+## Requisitos previos
 
-El archivo `.env` contiene la configuración local y **no se versiona**. Para
-preparar tu copia, duplica la plantilla incluida en el repo:
+| Herramienta | Versión | Para qué |
+|---|---|---|
+| Docker Desktop | 28+ | Levantar PostgreSQL (y opcionalmente el backend) |
+| JDK | 21 | Compilar y correr el backend |
+| Maven | 3.9+ (o el wrapper `./mvnw`) | Build del backend |
+| Node.js | 20+ | Correr el frontend |
+| Angular CLI | 20+ | Comando `ng serve` |
+| IDE | IntelliJ IDEA / VS Code | Correr el backend en modo debug |
+
+Verificación rápida:
 
 ```bash
-cp familia/Familia/.env.example familia/Familia/.env
-# y completa los valores reales (especialmente DB_USER y DB_PASSWORD)
+docker --version
+java -version
+node --version
 ```
 
-Variables disponibles (ver `.env.example`):
+## Configuración (.env)
 
-```properties
-# Aplicación
-APP_NAME=Familia
-APP_CONTEXT_PATH=/familia
-APP_PORT_IN=8080          # puerto interno del contenedor / del backend
-APP_PORT_OUT=8089         # puerto expuesto en el host
+El backend lee sus variables desde un archivo `.env` (vía `dotenv-java`), que
+**no se versiona**. Tanto el `docker-compose.yml` como la app al arrancar desde
+el IDE necesitan que ese archivo exista en la carpeta `familia/`.
 
-# Base de datos PostgreSQL
-DB_NAME=familia
-DB_HOST=localhost         # usar 'localhost' en dev, 'db' en prod (lo inyecta docker-compose)
-DB_USER=changeme
-DB_PASSWORD=changeme
-DB_PORT_IN=5432           # puerto interno de PostgreSQL en el contenedor
-DB_PORT_OUT=5439          # puerto expuesto en el host para conectarse desde el IDE
+Copia la plantilla y completa los valores:
+
+```bash
+cd familia
+cp .env.example .env
+# completa al menos DB_USER y DB_PASSWORD
 ```
 
-### Perfiles Spring
+Variables disponibles:
 
-| Perfil | Cuándo se usa | URL de la DB |
+| Variable | Ejemplo | Descripción |
 |---|---|---|
-| `dev` (por defecto) | Backend corre **localmente en el IDE**, DB en Docker | `localhost:${DB_PORT_OUT}` |
-| `prod` | Backend corre **dentro de docker-compose** junto a la DB | `db:${DB_PORT_IN}` (red interna) |
+| `APP_NAME` | `Familia` | Nombre de la aplicación |
+| `APP_CONTEXT_PATH` | `/familia` | Context path de la API |
+| `APP_PORT_IN` | `8080` | Puerto interno del backend (en el contenedor y en el IDE) |
+| `APP_PORT_OUT` | `8089` | Puerto del backend expuesto al host por Docker |
+| `DB_NAME` | `familia` | Nombre de la base de datos |
+| `DB_HOST` | `localhost` | Host de la DB (`localhost` en dev; Docker inyecta `db` en el contenedor) |
+| `DB_USER` | `<usuario>` | Usuario de PostgreSQL |
+| `DB_PASSWORD` | `<contraseña>` | Contraseña de PostgreSQL |
+| `DB_PORT_IN` | `5432` | Puerto interno de PostgreSQL (en el contenedor) |
+| `DB_PORT_OUT` | `5439` | Puerto de PostgreSQL expuesto al host |
 
-#### Cómo cambiar de perfil
+PostgreSQL se inicializa automáticamente la primera vez con
+`db/sql/create_schema.sql` (esquema) y `db/sql/data.sql` (datos semilla).
 
-Edita una sola línea en `src/main/resources/application.properties`:
+### Dos "perfiles" que no hay que confundir
+
+| Concepto | Quién lo lee | Decide |
+|---|---|---|
+| **Perfil de Spring** (`dev` / `prod`) | El backend al arrancar | A qué URL de DB conecta |
+| **Perfil de Docker Compose** (`full`) | El comando `docker compose` | Qué contenedores arranca |
+
+El perfil de Spring se cambia editando **una sola línea** en
+`familia/src/main/resources/application.properties`:
 
 ```properties
 spring.profiles.active = dev    # o 'prod'
 ```
 
-Eso es todo — no se necesitan flags ni variables de entorno cuando corres
-desde el IDE. En `docker-compose.yml` el servicio `app` inyecta
-`SPRING_PROFILES_ACTIVE=prod` como variable de entorno, que tiene mayor
-precedencia que el archivo y por eso el contenedor siempre arranca con
-`prod` independientemente del valor del archivo.
+En el stack completo de Docker no hace falta tocar ese archivo: el contenedor
+del backend recibe `SPRING_PROFILES_ACTIVE=prod` como variable de entorno, que
+tiene mayor precedencia.
 
-Cómo verificar qué perfil quedó activo: en el log de arranque aparece:
+## Despliegue del backend
 
+Hay dos flujos soportados. Ambos se ejecutan **desde la carpeta `familia/`**.
+
+```mermaid
+flowchart LR
+    subgraph A["Flujo A — desarrollo"]
+        IDE["Backend en IDE\nperfil dev\nlocalhost:8080"] --> DBA[("PostgreSQL\nDocker\nlocalhost:5439")]
+    end
+    subgraph B["Flujo B — stack completo"]
+        BK["Backend en Docker\nperfil prod\nlocalhost:8089"] --> DBB[("PostgreSQL\nDocker\nred interna")]
+    end
 ```
-INFO ... : The following 1 profile is active: "dev"
-```
 
-### Configuración de Base de Datos
-La base de datos se inicializa automáticamente con:
-- Esquema completo en `db/sql/create_schema.sql`
-- Datos de prueba en `db/sql/data.sql`
+### Flujo A — Solo la base de datos (desarrollo)
 
-## Uso
-
-### Iniciar la Aplicación
-
-> ⚠️ **Importante — no confundir dos "perfiles" distintos:**
->
-> En este proyecto conviven dos conceptos que se llaman parecido pero son
-> independientes:
->
-> | Perfil | Quién lo lee | Decide |
-> |---|---|---|
-> | **Perfil de Spring** (`dev` / `prod`) | El backend Java al arrancar | A qué URL de DB conecta |
-> | **Perfil de Docker Compose** (`full`) | El comando `docker compose` | Qué **contenedores** arranca |
->
-> Cambiar `spring.profiles.active = prod` en `application.properties`
-> **no hace** que Docker arranque el contenedor del backend — solo le dice
-> al backend a qué DB conectar **cuando** alguien lo arranca. Para que
-> Docker arranque el contenedor del backend hay que pasarle
-> `--profile full`. Lo bueno: una vez le pasas `--profile full`, el
-> `docker-compose.yml` ya inyecta `SPRING_PROFILES_ACTIVE=prod` al
-> contenedor, así que el archivo `application.properties` deja de importar
-> para ese caso.
-
-Hay **dos flujos** soportados. El flujo diario de desarrollo es el primero:
-arrancar solo PostgreSQL en Docker y correr el backend desde el IDE para
-poder debuggear con breakpoints. El segundo flujo arranca todo el stack
-containerizado y se usa cuando se quiere probar la imagen del backend o
-correr el sistema de extremo a extremo sin IDE.
-
-#### Flujo A — Desarrollo (solo DB en Docker, backend en el IDE) — por defecto
+Es el flujo del día a día: Docker levanta **solo PostgreSQL** y el backend se
+corre desde el IDE para poder debuggear con breakpoints. El servicio `app` está
+marcado con `profiles: ["full"]`, así que un `up` simple **no** lo arranca.
 
 ```bash
-# 1. Levantar solo PostgreSQL (el servicio `app` esta en el perfil `full`,
-#    asi que NO arranca con un `up` simple).
-cd familia/Familia
+cd familia
+
+# 1. Levantar solo PostgreSQL (queda expuesto en localhost:5439).
 docker compose up -d
 
-# 2. Verificar que la DB esta arriba en localhost:5439 (DB_PORT_OUT).
-docker compose ps
+# 2. Confirmar que solo está la DB.
+docker compose ps        # debe aparecer únicamente el contenedor `base_de_datos`
 
-# 3. Arrancar el backend desde IntelliJ / VSCode con su configuracion de
-#    run habitual (clase FamiliaApplication). Spring tomara el perfil
-#    `dev` por defecto y se conectara a localhost:5439.
+# 3. Arrancar el backend desde el IDE (clase FamiliaApplication).
+#    Toma el perfil `dev` por defecto y conecta a localhost:5439.
+#    Queda escuchando en http://localhost:8080/familia
 
-# 4. Detener la DB cuando termines.
+# 4. Apagar la DB al terminar.
 docker compose down
 ```
 
-#### Flujo B — Full stack containerizado (DB + backend en Docker)
+### Flujo B — Base de datos + backend (stack completo)
 
-El servicio `app` está marcado con `profiles: ["full"]` en
-`docker-compose.yml`, así que **solo arranca cuando se le pasa explícitamente
-`--profile full`** al comando. El flag debe ir en todos los comandos del
-ciclo (`up`, `down`, `logs`, `ps`) para que docker-compose reconozca al
-servicio:
+Levanta **DB + backend** containerizados. Hay que pasar `--profile full` en
+**todos** los comandos del ciclo para que Compose reconozca el servicio `app`.
 
 ```bash
-# Construye la imagen del backend y arranca DB + backend con el perfil Spring `prod`.
-cd familia/Familia
+cd familia
+
+# Construir la imagen del backend y levantar todo (perfil Spring `prod`).
 docker compose --profile full up --build
 
 # En segundo plano:
@@ -275,172 +173,89 @@ docker compose --profile full up -d --build
 # Ver logs:
 docker compose --profile full logs -f
 
-# Detener:
+# Apagar (agrega -v para borrar también el volumen de datos):
 docker compose --profile full down
 ```
 
-> **Tip:** dentro del contenedor, el backend tomará siempre el perfil
-> Spring `prod` (lo inyecta `docker-compose.yml` vía
-> `SPRING_PROFILES_ACTIVE=prod`), sin importar lo que diga
-> `application.properties`. No hace falta cambiar nada en el archivo antes
-> de levantar este flujo.
+En este flujo el backend queda expuesto en `http://localhost:8089/familia`.
 
-### Detener y limpiar
+## Despliegue del frontend
 
-```bash
-# Detener todo (cualquier perfil) y eliminar volumenes:
-docker compose --profile full down -v
-```
+El frontend es una app Angular 20 que consume el backend en
+`http://localhost:8089/familia` (configurado en
+`familia-front/src/app/enviroments/global-component.ts`).
 
-## API Reference
-
-### Endpoints Principales
-
-#### Gestión de Personas
-```http
-GET    /familia/personas           # Obtener todas las personas
-POST   /familia/personas           # Crear nueva persona
-GET    /familia/personas/{id}      # Obtener persona por ID
-PUT    /familia/personas/{id}      # Actualizar persona
-DELETE /familia/personas/{id}      # Eliminar persona
-```
-
-#### Gestión de Ciudades
-```http
-GET    /familia/ciudades           # Obtener todas las ciudades
-```
-
-### Ejemplo de Request
-```json
-POST /familia/personas
-{
-    "numero_documento": "1105062032",
-    "nombre": "Weizman",
-    "apellidos": "Castañeda",
-    "fecha_nacimiento": "1998-05-27",
-    "correo_electronico": "weizman@correo.com",
-    "telefono": "3111111111",
-    "ocupacion": "INDEPENDIENTE",
-    "idCiudad": 1
-}
-```
-
-### Ejemplo de Response
-```json
-{
-    "numero_documento": "1105062032",
-    "nombre": "Weizman",
-    "apellidos": "Castañeda",
-    "fecha_nacimiento": "1998-05-27",
-    "correo_electronico": "weizman@correo.com",
-    "telefono": "3111111111",
-    "ocupacion": "INDEPENDIENTE",
-    "ciudad": {
-        "id": 1,
-        "nombre": "Medellín",
-        "departamento": "Antioquia"
-    },
-    "esViable": true
-}
-```
-
-## Testing
-
-### Pruebas con Postman
-1. Importar `Familia.postman_collection.json` en Postman
-2. Configurar variables de entorno si es necesario
-3. Ejecutar la colección completa o requests individuales
-
-### Conexión a Base de Datos
-```properties
-Host: localhost
-Puerto: 5438
-Usuario: weizman
-Contraseña: YourStrong()Passw0rd
-Base de datos: familia
-```
-
-### Verificación de Servicios
-```bash
-# Verificar que la aplicación esté corriendo
-curl http://localhost:8088/familia/personas
-
-# Verificar conexión a base de datos
-docker-compose exec db psql -U weizman -d familia -c "SELECT * FROM personas LIMIT 5;"
-```
-
-## Despliegue
-
-### Desarrollo
-```bash
-docker-compose up --build
-```
-
-### Producción
-Para producción, considere:
-- Usar variables de entorno más seguras
-- Implementar volúmenes persistentes
-- Configurar reverse proxy (Nginx)
-- Implementar SSL/TLS
-- Configurar logging centralizado
-
-### Monitoreo
-```bash
-# Ver logs de la aplicación
-docker-compose logs app
-
-# Ver logs de base de datos
-docker-compose logs db
-
-# Monitorear recursos
-docker stats
-```
-
-# Despliegue del front
-en la raiz del proyecto ingresamos al directorio **familia-front**
 ```bash
 cd familia-front
-```
-### inicialización y despliegue
-```bash
 npm install
-
 ng serve
 ```
-El front estará disponible en la ruta 
+
+Queda disponible en `http://localhost:4200/`.
+
+> **Para que el front funcione de extremo a extremo** necesita el backend
+> respondiendo en `http://localhost:8089/familia`. Ese puerto es el que expone
+> el **Flujo B** (stack completo). Si prefieres correr el backend desde el IDE
+> (Flujo A), este escucha en `APP_PORT_IN` (`8080`); en ese caso ajusta
+> `apiUrl` en `familia-front/src/app/enviroments/global-component.ts` a
+> `http://localhost:8080/familia`, o alinea los puertos.
+
+## Puertos y URLs
+
+| Servicio | Flujo | URL / Puerto |
+|---|---|---|
+| Backend (IDE, perfil dev) | A | `http://localhost:8080/familia` |
+| Backend (Docker, perfil prod) | B | `http://localhost:8089/familia` |
+| PostgreSQL (host) | A y B | `localhost:5439` |
+| Healthcheck (Actuator) | A / B | `.../familia/actuator/health` |
+| Frontend | — | `http://localhost:4200/` |
+
+## Verificación
+
 ```bash
-http://localhost:4200/
+# Salud del backend (ajusta el puerto al flujo: 8080 en IDE, 8089 en Docker).
+curl http://localhost:8089/familia/actuator/health
+
+# Listar ciudades (catálogo semilla).
+curl http://localhost:8089/familia/ciudades
+
+# Crear una persona (datos de ejemplo, contrato en camelCase).
+curl -X POST http://localhost:8089/familia/personas \
+  -H "Content-Type: application/json" \
+  -d '{
+        "numeroDocumento": "1234567890",
+        "nombre": "Juan",
+        "apellidos": "Pérez",
+        "fechaNacimiento": "1990-05-20",
+        "correoElectronico": "juan.perez@correo.com",
+        "telefono": "3001234567",
+        "ocupacion": "EMPLEADO",
+        "idCiudad": 1
+      }'
 ```
 
----
+También puedes importar `Familia.postman_collection.json` en Postman para
+probar la colección completa.
 
-## Contribución
+## Pruebas
 
-### Flujo de Trabajo
-1. Fork el repositorio
-2. Crear rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit cambios (`git commit -m 'Add: nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crear Pull Request
+Las pruebas del backend se ejecutan desde la carpeta `familia/`:
 
-### Estándares de Código
-- Seguir convenciones de Java y Spring Boot
-- Documentar métodos públicos
-- Escribir tests unitarios
-- Usar commits descriptivos
+```bash
+cd familia
+./mvnw clean verify
+```
 
-### Reportar Issues
-Para reportar problemas o solicitar características:
-- Usar el sistema de Issues de GitHub
-- Incluir logs relevantes
-- Describir pasos para reproducir el problema
+Las pruebas de integración usan **Testcontainers** (PostgreSQL real en un
+contenedor). Si Docker no está disponible en la máquina, esas pruebas se
+**omiten** automáticamente y el resto sigue corriendo, así que el build no se
+rompe. El detalle de la estrategia de pruebas está en
+[`familia/ROADMAP.md`](familia/ROADMAP.md) (fase F7).
 
 ## Licencia
 
-Este proyecto está licenciado bajo la [MIT License](LICENSE).
+Este proyecto está licenciado bajo los términos del archivo [LICENSE](LICENSE).
 
 ---
 
-**Desarrollado por**: [weizmanfabian](https://github.com/weizmanfabian)  
-**Versión**: 1.0.0  
-**Última actualización**: Enero 2025
+**Última actualización:** 2026-06-02

@@ -5,8 +5,8 @@
 > Mantiene contexto entre sesiones para que cualquier agente (o el usuario)
 > pueda retomar el trabajo sin re-explorar.
 >
-> **Última actualización:** 2026-06-01 · **Estado global:** F7 cerrada
-> al 100%. Siguiente: F8 (cierre de calidad).
+> **Última actualización:** 2026-06-02 · **Estado global:** F8 en curso
+> (F8.3 documentación lista). Pendiente: F8.1, F8.2, F8.4.
 
 ---
 
@@ -301,8 +301,11 @@ BD compartida.
 - [ ] **F8.1** `mvn clean verify` verde.
 - [ ] **F8.2** Correr `quality-code-reviewer` sobre el diff completo de la
       rama. Resolver findings BLOCKER y CRITICAL antes de continuar.
-- [ ] **F8.3** Actualizar `README.md` con los nuevos flujos (docker dev-only-db,
-      perfiles, comandos para correr desde IDE).
+- [x] **F8.3** `README.md` de la raíz reescrito como guía de despliegue del
+      monorepo (backend en `familia/` + front en `familia-front/`). Cubre los
+      dos flujos Docker desde `familia/`, perfiles, `.env`, puertos y
+      verificación. Corrige lo desfasado: rutas, paquetes pre-refactor,
+      contrato JSON `snake_case` → `camelCase` (D9), puertos y credenciales.
 - [ ] **F8.4** Abrir PR `refactor: aplica clean code, solid y arquitectura
       limpia en backend Familia` vía `git-expert` (mensaje en español, body
       explicando el porqué de cada fase, footer con `Refs:` si hay issue).
@@ -323,8 +326,8 @@ con todas las casillas marcadas.
 | F4. Servicios y excepciones | 6/6 | [x] |
 | F5. Dominio | 3/3 | [x] |
 | F7. Pruebas | 4/4 | [x] |
-| F8. Cierre | 0/4 | [ ] |
-| **Total** | **36/40** | **90%** |
+| F8. Cierre | 1/4 | [ ] |
+| **Total** | **37/40** | **92%** |
 
 **Próximo paso sugerido:** F8 — cierre de calidad:
 1. `mvn clean verify` verde (con Docker arriba corre el integration test;
@@ -340,6 +343,7 @@ con todas las casillas marcadas.
 > Registrar aquí decisiones nuevas, bloqueos, desvíos del plan. Una línea por
 > evento, formato: `YYYY-MM-DD — descripción corta`.
 
+- `2026-06-02 — F8.3 lista. README de la raiz reescrito como guia de despliegue del monorepo (backend Spring Boot en familia/ + front Angular en familia-front/): dos flujos Docker desde familia/ (up = solo DB perfil dev; --profile full = DB+backend perfil prod), .env, perfiles, puertos y verificacion. Correcciones del README viejo: rutas (cd familia/familia/familia), paquetes pre-refactor, contrato JSON snake_case -> camelCase (D9), puertos 8088/5438 -> 8089/8080/5439, credenciales reales removidas. Gotcha documentado: el front apunta fijo a localhost:8089 (APP_PORT_OUT, backend del Flujo B); en Flujo A el IDE escucha en 8080 y hay que ajustar apiUrl o alinear puertos. Previo: commit c8d754d aplano familia/Familia/* -> familia/*.`
 - `2026-06-01 — F7 cerrada (20 tests verdes). F7.1 PersonaServiceTest (Mockito, 11). F7.2 PersonaMapperTest (3, @SpringJUnitConfig escaneando infrastructure.mappers para inyectar los Impl generados). F7.3 PersonaEntityTest parametrizado (4). F7.4 PersonaIntegrationTest con Testcontainers PostgreSQL; base AbstractPostgresIntegrationTest + @DynamicPropertySource; FamiliaApplicationTests la extiende. Props de test en src/test/resources/application.properties (sin placeholders de .env, que solo se resuelven en main(); ddl-auto=create-drop). disabledWithoutDocker=true para no romper el build sin Docker. Datos ficticios (sin PII). Gotchas de entorno del usuario (no del codigo): (1) PATH de Machine con una entrada basura pegada (PyCharm\\bin + maven\\bin sin ';') rompia Testcontainers con InvalidPathException; se removio la entrada. (2) Docker Desktop usa el contexto desktop-linux (npipe dockerDesktopLinuxEngine) pero DOCKER_HOST vacio hacia que Testcontainers cayera al pipe docker_engine -> HTTP 400; se fija DOCKER_HOST=npipe:////./pipe/dockerDesktopLinuxEngine (scope User).`
 - `2026-05-31 — F5 implementada (pendiente smoke test + commit). F5.1: validarViabilidad renombrado a calcularViabilidad y quitados @PostPersist/@PostUpdate de PersonaEntity; antes corria dos veces (listener JPA + llamada explicita en el servicio), ahora solo explicita antes de save() en crear/actualizar. F5.2: constantes EDAD_VIABLE_MIN=18 y EDAD_VIABLE_MAX=65 como private static final int en PersonaEntity (YAGNI: no se creo ReglasViabilidad). F5.3: TestController borrado (hallazgo #13); Actuator ya expone /familia/actuator/health.`
 - `2026-05-31 — Smoke test F4 destapa dos cosas. (1) BUG real preexistente: los @ExceptionHandler devolvian BaseErrorResponse sin fijar status HTTP -> Spring respondia 200 OK con body que decia code 400. Corregido: GlobalExceptionHandler ahora devuelve ResponseEntity<BaseErrorResponse> con .status(...); validacion/formato/duplicado -> 400, RegistroNoEncontrado -> 404. (2) Decision D9: se revierte la parte JSON de F2.5/D6 -> contrato JSON en camelCase (numeroDocumento, fechaNacimiento, correoElectronico, idCiudad), snake_case solo en BD via @Column. Eliminada la linea spring.jackson.property-naming-strategy=SNAKE_CASE de application.properties.`
